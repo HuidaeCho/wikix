@@ -1036,8 +1036,9 @@ function replace($r, $content){
 					'chr(0x$bs${bs}1)',
 #php403:					*/
 #php403:					'chr(0x$bs$bs'.'1)',
+				str_replace('$', '$bs$',
 				str_replace('$bs/', '/',
-				str_replace('$bs\"', '\"', '\\3'))),
+				str_replace('$bs\"', '\"', '\\3')))),
 				str_replace('\x03', '$bs$bs$bs$bs',
 				str_replace('$bs\"', '\"', '\\5')))",
 			$content);
@@ -1067,8 +1068,9 @@ function rreplace($content){
 					'chr(0x$bs${bs}1)',
 #php403:					*/
 #php403:					'chr(0x$bs$bs'.'1)',
+				str_replace('$', '$bs$',
 				str_replace('$bs/', '/',
-				str_replace('$bs\"', '\"', '\\4'))),
+				str_replace('$bs\"', '\"', '\\4')))),
 				str_replace('\x03', '$bs$bs$bs$bs',
 				str_replace('$bs\"', '\"', '\\6'))).
 			'\\7\x07'",
