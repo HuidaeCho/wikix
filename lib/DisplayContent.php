@@ -1064,6 +1064,9 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				if($br != "")
 					$br = mysubs($br);
 			}
+			if($iline == "")
+				$br = "";
+			else
 			if(substr($iline, -1) == "\n")
 				$iline = substr($iline, 0, -1);
 			echo "$endblock$iline$br\n";
