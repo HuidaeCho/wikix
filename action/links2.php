@@ -10,12 +10,12 @@ if(!$admin){
 	}
 }
 if(($id = pageid($Pagename))){
-	$where = "link.linkto=$id";
+	$where = "${db_}link.linkto=$id";
 	$doit = "display";
 	$w[0] = geni_specialchars($pagename0);
 	$w[1] = "";
 }else{
-	$where = "link.linktoname='$Pagename'";
+	$where = "${db_}link.linktoname='$Pagename'";
 	$doit = "goto";
 	$w = split_word($pagename0);
 	$w[0] = geni_specialchars($w[0]);
