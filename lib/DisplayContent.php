@@ -898,20 +898,21 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		if(!$domultilinelisting && $iclose > 0 && $close[0] == 3 &&
 				strpos("*#;", $iline[0]) === false){
 			if($mode){
-				$str = "";
+				$endblock = "";
 				for(; --$iclose>=0; ){
 					if($close[$iclose] == 1)
-						$str .= table("", $isblock, $table, $ntattrs, $done);
+						$endblock .= table("", $isblock, $table, $ntattrs, $done);
 					else
 					if($close[$iclose] == 2)
-						$str .= pre("", $isblock, $done);
+						$endblock .= pre("", $isblock, $done);
 					else
 					if($close[$iclose] == 3)
-						$str .= listing("", $done);
+						$endblock .= listing("", $done);
 				}
 				$iclose++;
 				if($domysubs)
-					echo mysubs($str);
+					$endblock = mysubs($endblock);
+				echo $endblock;
 			}
 		}
 		if(($n = preg_match_all("'\\\\bgroup([0-9]*)\r(.*?)\r".
