@@ -613,9 +613,9 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 	$order = " order by ${db_}page.name asc";
 	$regex = 0;
 	$iregex = "";
-	$range = 0;
 	$highlight = "";
-	if(preg_match("'(.*)/([-tcirh~RMP@]*)$'", $search, $m)){
+	$range = 0;
+	if(preg_match("'(.*)/([-tcrih~RMP@]*)$'", $search, $m)){
 		$search = $m[1];
 		$l = strlen($m[2]);
 		for($i=0; $i<$l; $i++){
@@ -626,6 +626,10 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 			case "c":
 				$tc |= 0x2;
 				break;
+			case "r":
+				$regex = 1;
+				$range = 0;
+				break;
 			case "i":
 				if($caseinsensitiveSearch){
 					$ibegin = "";
@@ -634,10 +638,6 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 					$ibegin = "lower(";
 					$iend = ")";
 				}
-				break;
-			case "r":
-				$regex = 1;
-				$range = 0;
 				break;
 			case "h":
 				if($highlightedSearch)
