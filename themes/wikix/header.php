@@ -21,7 +21,7 @@ Login as <a href="index.php?goto=<?=$author?>"><?=$author?></a>
 <?}?>
 </td><td align="right">
 <a accesskey="w" href="http://wikix.org">
-<img src="<?=$mytheme?>/images/wikiXunlimited.png" alt="wikiX Official Site" border="0px" /></a>
+<img src="<?=$mytheme?>/images/NovaKim_Powered_by_wikiX_02.png" alt="Powered by wikiX" border="0px" /></a>
 <br />
 TimeZone: <?=date("T")?> | <a href="#Bottom">Bottom</a>
 </td></tr>
