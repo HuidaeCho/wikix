@@ -223,6 +223,7 @@ $btime = btime();
 ################################################################################
 
 include_once("lib/get_mythemeNcss.php");
+include_once("$mytheme/message.php");
 include_once("mywikix/header0.php");
 include_once("$mytheme/header.php");
 
