@@ -98,14 +98,14 @@ if($subaction == "" || $subaction == "Save"){
 			$content = $data['content'];
 			if(!$admin && $data['locked'])
 				$content = hidecode($content);
-		}else
-		if($content === $data['content']){
-#			warn("Page refreshed.");
-#/*
-			warn("No changes to save.");
-			include_once("action/display.php");
-			return;
-#*/
+#		}else
+#		if($content === $data['content']){
+##			warn("Page refreshed.");
+##/*
+#			warn("No changes to save.");
+#			include_once("action/display.php");
+#			return;
+##*/
 		}
 		$version = $data['version'];
 	}else
