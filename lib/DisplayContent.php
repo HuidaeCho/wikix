@@ -3029,7 +3029,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$chktime = "ctime";
 		}
 		$query = "select id, ".($updateuser?"pw, ":"").
-				"cip, ctime, mip, mtime from userdb
+				"cip, ctime, mip, mtime from ${db_}userdb
 				$limitlist[1]order by $chktime desc, id";
 		$result = pm_query($db, $query);
 		$nrows = pm_num_rows($result);
