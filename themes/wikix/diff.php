@@ -85,34 +85,47 @@ for($e0=$nlines0-1,$e1=$nlines1-1; $e0>=$s&&$e1>=$s&&$line0[$e0]===$line1[$e1];
 		$e0--,$e1--);
 $e0++;
 $e1++;
-$lcsl = array();
-for($m=$s; $m<$e0; $m++){
-	for($n=$s; $n<$e1; $n++){
-		if($line0[$m] === $line1[$n])
-			$lcsl[$m][$n] = $lcsl[$m-1][$n-1] + 1;
-		else
-		if($lcsl[$m][$n-1] > $lcsl[$m-1][$n])
-			$lcsl[$m][$n] = $lcsl[$m][$n-1];
-		else
-			$lcsl[$m][$n] = $lcsl[$m-1][$n];
-	}
-}
-$l = $i = $lcsl[$m-1][$n-1];
-$delta = array();
-for($m=$e0-1,$n=$e1-1; $i>0&&$m>=$s&&$n>=$s; $m--,$n--){
-	if($line0[$m] === $line1[$n])
-		$delta[--$i] = "$m,$n";
-	else
-	if($lcsl[$m][$n-1] > $lcsl[$m-1][$n])
-		$m++;
-	else
-		$n++;
-}
-$l++;
-$delta[] = "$e0,$e1";
 $m = $n = $s;
+$delta = lcs($line0, $line1, $l, $s, $e0, $e1);
 for($i=0; $i<$l; $i++,$m++,$n++){
 	list($x, $y) = explode(",", $delta[$i]);
+	if($x > $m && $y > $n){
+		echo "<tr><td class=\"diff_modified\"><tt>* ";
+		for(; $m<$x&&$n<$y; $m++,$n++){
+			$l0 = $line0[$m];
+			$l1 = $line1[$n];
+			$nl0 = strlen($l0);
+			$nl1 = strlen($l1);
+			for($is=0; $is<$nl0&&$s<$nl1&&$l0[$is]===$l1[$is];$is++)
+				echo $l1[$is];
+			for($ie0=$nl0-1,$ie1=$nl1-1; $ie0>=$is&&$ie1>=$is&&
+					$l0[$ie0]===$l1[$ie1]; $ie0--,$ie1--);
+			$ie0++;
+			$ie1++;
+			$im = $in = $is;
+			$idelta = lcs($l0, $l1, $il, $is, $ie0, $ie1);
+			for($ii=0; $ii<$il; $ii++,$im++,$in++){
+				list($ix, $iy) = explode(",", $idelta[$ii]);
+				if($ix > $im){
+					echo "<span class=\"diff_modified_deleted\">";
+					for(; $im<$ix; $im++)
+						echo $l0[$im];
+					echo "</span>";
+				}
+				if($iy > $in){
+					echo "<span class=\"diff_modified_added\">";
+					for(; $in<$iy; $in++)
+						echo $l1[$in];
+					echo "</span>";
+				}
+				if($in < $ie1)
+					echo $l1[$in];
+			}
+			for($ii=$ie1; $ii<$nl1; $ii++)
+				echo $l1[$ii];
+		}
+		echo "</td></tr>\n";
+	}
 	if($x > $m){
 		for(; $m<$x; $m++)
 			echo "<tr><td class=\"diff_deleted\"><tt>- $line0[$m]</tt></td></tr>\n";
@@ -129,34 +142,38 @@ for($i=$e1; $i<$nlines1; $i++)
 break;
 ################################################################################
 case "diff":
-$lcsl = array();
-for($m=0; $m<$nlines0; $m++){
-	for($n=0; $n<$nlines1; $n++){
-		if($line0[$m] === $line1[$n])
-			$lcsl[$m][$n] = $lcsl[$m-1][$n-1] + 1;
-		else
-		if($lcsl[$m][$n-1] > $lcsl[$m-1][$n])
-			$lcsl[$m][$n] = $lcsl[$m][$n-1];
-		else
-			$lcsl[$m][$n] = $lcsl[$m-1][$n];
-	}
-}
-$l = $i = $lcsl[$m-1][$n-1];
-$delta = array();
-for($m=$nlines0-1,$n=$nlines1-1; $i>0&&$m>=0&&$n>=0; $m--,$n--){
-	if($line0[$m] === $line1[$n])
-		$delta[--$i] = "$m,$n";
-	else
-	if($lcsl[$m][$n-1] > $lcsl[$m-1][$n])
-		$m++;
-	else
-		$n++;
-}
-$l++;
-$delta[] = "$nlines0,$nlines1";
 $m = $n = 0;
+$delta = lcs($line0, $line1, $l);
 for($i=0; $i<$l; $i++,$m++,$n++){
 	list($x, $y) = explode(",", $delta[$i]);
+	if($x > $m && $y > $n){
+		echo "<tr><td class=\"diff_modified\"><tt>* ";
+		for(; $m<$x&&$n<$y; $m++,$n++){
+			$l0 = $line0[$m];
+			$l1 = $line1[$n];
+			$nl1 = strlen($l1);
+			$im = $in = 0;
+			$idelta = lcs($l0, $l1, $il);
+			for($ii=0; $ii<$il; $ii++,$im++,$in++){
+				list($ix, $iy) = explode(",", $idelta[$ii]);
+				if($ix > $im){
+					echo "<span class=\"diff_modified_deleted\">";
+					for(; $im<$ix; $im++)
+						echo $l0[$im];
+					echo "</span>";
+				}
+				if($iy > $in){
+					echo "<span class=\"diff_modified_added\">";
+					for(; $in<$iy; $in++)
+						echo $l1[$in];
+					echo "</span>";
+				}
+				if($in < $nl1)
+					echo $l1[$in];
+			}
+		}
+		echo "</td></tr>\n";
+	}
 	if($x > $m){
 		for(; $m<$x; $m++)
 			echo "<tr><td class=\"diff_deleted\"><tt>- $line0[$m]</tt></td></tr>\n";

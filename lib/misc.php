@@ -1113,4 +1113,46 @@ function patch($content0, $diff){
 	$str = str_replace("\x01\n", "", $str);
 	return $str;
 }
+
+function lcs($c0, $c1, &$l, $s=0, $e0=0, $e1=0){
+	if(!$e0){
+		if(is_array($c0))
+			$e0 = count($c0);
+		else
+			$e0 = strlen($c0);
+	}
+	if(!$e1){
+		if(is_array($c1))
+			$e1 = count($c1);
+		else
+			$e1 = strlen($c1);
+	}
+
+	$lcsl = array();
+	for($m=$s; $m<$e0; $m++){
+		for($n=$s; $n<$e1; $n++){
+			if($c0[$m] === $c1[$n])
+				$lcsl[$m][$n] = $lcsl[$m-1][$n-1] + 1;
+			else
+			if($lcsl[$m][$n-1] > $lcsl[$m-1][$n])
+				$lcsl[$m][$n] = $lcsl[$m][$n-1];
+			else
+				$lcsl[$m][$n] = $lcsl[$m-1][$n];
+		}
+	}
+	$l = $i = $lcsl[$m-1][$n-1];
+	$delta = array();
+	for($m=$e0-1,$n=$e1-1; $i>0&&$m>=$s&&$n>=$s; $m--,$n--){
+		if($c0[$m] === $c1[$n])
+			$delta[--$i] = "$m,$n";
+		else
+		if($lcsl[$m][$n-1] > $lcsl[$m-1][$n])
+			$m++;
+		else
+			$n++;
+	}
+	$l++;
+	$delta[] = "$e0,$e1";
+	return $delta;
+}
 ?>
