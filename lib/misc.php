@@ -1127,10 +1127,10 @@ function patch($content0, $diff){
 	return $str;
 }
 
-function lcs($c0, $c1, &$l, $s=0, $e0=0, $e1=0){
-	if(!$e0)
+function lcs($c0, $c1, &$l, $s=0, $e0=-1, $e1=-1){
+	if($e0 < 0)
 		$e0 = count($c0);
-	if(!$e1)
+	if($e1 < 0)
 		$e1 = count($c1);
 
 	$lcsl = array();
