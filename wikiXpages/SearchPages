@@ -6,19 +6,19 @@
 
 * You can also exclude a given word by prepending ~ to the word.
 
-* Options: Search options like t, c, i, r, ~, h, R, M, P, -, and @ can be specified to limit the result of the given condition. ex) /ti, /it, /tir
+* Options: Search options like t, c, r, i, h, ~, R, M, P, -, and @ can be specified to limit the results of the given condition. ex) /ti, /it, /tir
 \nowikiword
 ** t: Title: Search in title only
 ** c: Content: Search in content only
-** i: IgnoreCase: Search case-insensitively
 ** r: RegularExpression: Search by regular expressions
+** i: IgnoreCase: Search case-insensitively
+** h: HighlightResults: Highlight the results
 ** ~: Range: Search by ASCII code range
-** h: Highlight: Highlighting the given word or regular expressions
-** R: RecentChanges: Sort the result by modified time
-** M: MostPopular: Sort the result by hits count
-** P: RecentPages: Sort the result by created time
-** -: Reverse: Reverse the result of the sorted result
-** @: Random: Make the result random
+** R: RecentChanges: Sort the results by modified time
+** M: MostPopular: Sort the results by hits count
+** P: RecentPages: Sort the results by created time
+** -: Reverse: Reverse the results of the previously sorted results
+** @: Random: Make the results random
 ** If R, M, P, -, and @ are specified more than once, the last one is used.
 ** If both t and c are specified, given condition should be matched both in title and content.
 ** If only t is specified between t and c, or ~ is specified, then h is ignored.

@@ -6,7 +6,7 @@
 ($tc&0x2?"Content":"")." / ".
 ($ibegin==""?"Dont":"")."IgnoreCase".
 ($regex?" / RegularExpression":"")." / ".
-($highlight==""?"Dont":"")."Highlight"."<br />\n".
+($highlight==""?"Dont":"")."HighlightResults"."<br />\n".
 str_replace("\x03", "\\", ($highlight==""?
 	pagelist($query, 0, 0, $random, $color):
 	highlighted_pagelist($query, 0, 0, $random, $highlight)))

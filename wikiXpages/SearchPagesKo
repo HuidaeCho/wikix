@@ -6,14 +6,14 @@
 
 * ~를 단어 앞에 붙이면 그 단어를 포함하지 않은 문서를 찾는다.
 
-* 검색옵션: 검색조건 입력후 / 다음 t, c, i, r, ~, h, R, M, P, -, @를 조합해서 입력한다. /ti, /it, /tir
+* 검색옵션: 검색조건 입력후 / 다음 t, c, r, i, h, ~, R, M, P, -, @를 조합해서 입력한다. /ti, /it, /tir
 \nowikiword
 ** t: Title: 제목만 검색
 ** c: Content: 본문만 검색
-** i: IgnoreCase: 대소문자 구분 안함
 ** r: RegularExpression: 정규표현식으로 검색
+** i: IgnoreCase: 대소문자 구분 안함
+** h: HighlightResults: 검색결과를 강조함
 ** ~: Range: 구간으로 검색
-** h: Highlight: 단어 혹은 정규표현식을 강조해서 보여 줌
 ** R: RecentChanges: 최근 수정된 글 순서
 ** M: MostPopular: 조회수 많은 글 순서
 ** P: RecentPages: 최근 생성된 글 순서
