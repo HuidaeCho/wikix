@@ -18,7 +18,7 @@
 #$diff_method = "geni";
 $diff_method = "diff0";
 #$diff_method = "diff";
-$hdiff = 1;
+$hdiff = 0;
 #$diff_method = "ext";
 
 switch($diff_method){
