@@ -37,25 +37,20 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 	if($reset)
 		include_page("\x01", "\x01");
 	$content = include_page($pagename0, $content);
+	$content = hidecode($content);
 
 	$content = mystage0($content, $mode);
 
-	$content = str_replace("\\\\", "\x03", $content);
 	$pattern = array(
 		"/^(?:.*\n)?\\\\begin\n/s",
 		"/\n\\\\end(?:\n.*)?$/s",
-		"/\\\\beginhide(?![a-zA-Z])[ \t]?(.*?)\\\\endhide(?![a-zA-Z])/s",
 		"/^\\\\basis\n(.*?)\n\\\\easis$/mse",
 		"/^\\\\bnobs\n(.*?)\n\\\\enobs$/mse",
 		"/^\\\\bnos\n(.*?)\n\\\\enos$/mse",
-		"/^\x03bhide\n(.*?)\n(\x03|\\\\)ehide$/ms",
-		"/^(\x03|\\\\)bhide\n(.*?)\n\x03ehide$/ms",
-		"/^\\\\bhide\n(.*?)\n\\\\ehide$/ms",
 	);
 	$replace = array(
 		"",
 		"",
-		($admin?"\\1":""),
 		"str_replace('/', '/\x06',
 			str_replace('$bs$bs', '\x03',
 			str_replace('$bs\"', '\"', '\\1')))",
@@ -63,11 +58,9 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			str_replace('$bs\"', '\"', '\\1'))",
 		"str_replace('/', '/\x06',
 			str_replace('$bs\"', '\"', '\\1'))",
-		($admin?"\\1":""),
-		($admin?"\\1":""),
-		"\\1",
 	);
 	$content = preg_replace($pattern, $replace, $content);
+	$content = str_replace("\\\\", "\x03", $content);
 
 	$content = preg_replace("/\\\\myphp\{(.*?)(?<!\\\\)\}/e",
 		"php(str_replace('\x03', '$bs$bs', stripslashes('\\1')))",

@@ -95,8 +95,7 @@ if($data0['content'] == "\x01"){
 }else{
 	$size0 = ($showsize?number_format(strlen($data0['content'])):"-");
 	$content0 = str_replace("\r", "", $data0['content']);
-	if(!$admin && $page['locked'])
-		$content0 = hidecode($content0);
+	$content0 = hidecode($content0, $page['locked'], 1);
 	$content0 = geni_specialchars0($content0);
 	$line0 = explode("\n", $content0);
 	$nlines0 = count($line0);
@@ -110,8 +109,7 @@ if($data1['content'] == "\x01"){
 }else{
 	$size1 = ($showsize?number_format(strlen($data1['content'])):"-");
 	$content1 = str_replace("\r", "", $data1['content']);
-	if(!$admin && $page['locked'])
-		$content1 = hidecode($content1);
+	$content1 = hidecode($content1, $page['locked'], 1);
 	$content1 = geni_specialchars0($content1);
 	$line1 = explode("\n", $content1);
 	$nlines1 = count($line1);

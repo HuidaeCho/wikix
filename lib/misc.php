@@ -993,15 +993,20 @@ function rreplace($content){
 	return $content;
 }
 
-function hidecode($content){
+function hidecode($content, $lock = 0, $src = 0){
+	global	$admin;
+
+	if($src && ($admin || !$lock))
+		return $content;
+
 	$content = str_replace("\\\\", "\x03", $content);
 	$pattern = array(
-		"/\\\\beginhide(?![a-zA-Z]).*?\\\\endhide(?![a-zA-Z])/s",
-		"/^\\\\bhide\n.*?\n\\\\ehide$/ms",
+		"/\\\\beginhide(?![a-zA-Z])(.*?)\\\\endhide(?![a-zA-Z])/s",
+		"/^\\\\bhide\n(.*?)\n\\\\ehide$/ms",
 	);
 	$replace = array(
-		"",
-		"",
+		($admin?"\\1":""),
+		($admin?"\\1":($src?"":"\\1")),
 	);
 	$content = preg_replace($pattern, $replace, $content);
 	$content = str_replace("\x03", "\\\\", $content);

@@ -96,8 +96,7 @@ if($subaction == "" || $subaction == "Save"){
 			$minversion = pm_fetch_result($result, 0, 0);
 			pm_free_result($result);
 			$content = $data['content'];
-			if(!$admin && $data['locked'])
-				$content = hidecode($content);
+			$content = hidecode($content, $data['locked'], 1);
 #		}else
 #		if($content === $data['content']){
 ##			warn("Page refreshed.");
