@@ -3860,9 +3860,9 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 
 function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 	global	$db, $db_, $admin, $author, $login, $btime, $now, $pageName,
-		$PageListFT, $limitlist;
+		$PageListFT, $highlightedSearchExtra, $limitlist;
 
-	$_extra = 30;
+	$extra = $highlightedSearchExtra;
 	
 	$query = str_replace("\x02", $limitlist[0], $query);
 	$result = pm_query($db, $query);
@@ -3960,12 +3960,12 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 			
 			$str .= "<li><span class=\"beforequery\">".
 				geni_specialchars0(strright(
-					substr($content, 0, $pstart), $_extra)).
+					substr($content, 0, $pstart), $extra)).
 				"</span><span class=\"query\">".
 				$splitted[$j+1].
 				"</span><span class=\"afterquery\">".
 				geni_specialchars0(strleft(
-					substr($content, $pdone), $_extra)).
+					substr($content, $pdone), $extra)).
 				"</li>\n";
 		}
 		

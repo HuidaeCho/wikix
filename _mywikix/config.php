@@ -58,6 +58,7 @@ $pageLock = 0;
 $pageHide = 0;
 $caseinsensitiveSearch = 0;
 $highlightedSearch = 1;
+$highlightedSearchExtra = 30;
 $expireTime = 1209600; # 14 * 86400;
 ################################################################################
 
