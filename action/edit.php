@@ -123,6 +123,24 @@ if($subaction == "Save"){
 	}
 */
 
+	if(preg_match("/^\\\\RenameTo:([^\r\n]+)/", $content, $m)){
+		$content = preg_replace("/^.*\n?/", "", $content);
+		if($pagename0 != $m[1] && $version){
+			$p = $Pagename;
+			$pagename0 = $m[1];
+			$pagename = geni_specialchars($pagename0);
+			$Pagename = addslashes($pagename0);
+			$pageName = geni_urlencode($pagename0);
+			$pagenamE = escape_doit($pagename0);
+			$query = "update ${db_}page set name='$Pagename'
+							where id=$data[id]";
+			$result = pm_query($db, $query);
+			$query = "update ${db_}file set page='$Pagename'
+							where page='$p'";
+			$result = pm_query($db, $query);
+		}
+	}
+
 	$wikiXheader = include_page($pagename0, $wikiXheader);
 	$wikiXfooter = include_page($pagename0, $wikiXfooter);
 	$content = "$wikiXheader\n\x06\n$content\n\x06\n$wikiXfooter";

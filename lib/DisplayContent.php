@@ -3425,7 +3425,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 			if(preg_match("/^\{(.*)(?<!\\\\)\}$/", $m[1][$i], $_m))
 				$ipagename = clean4plugin($_m[1]);
 			$iPagename = addslashes($ipagename);
-			$r = uploadedfiles($iPagename);
+			$r = str_replace("\\", "\x03", uploadedfiles($iPagename));
 			$str = preg_replace("\x01\\\\UploadedFiles".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
@@ -3448,7 +3448,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$depth = $_m[1];
 			$iPagename = addslashes($ipagename);
 			$LinkPool = array();
-			$r = "<ol class=\"linkup\">\n".linkup($iPagename, $depth, $depth)."</ol>";
+			$r = "<ol class=\"linkup\">\n".str_replace("\\", "\x03", linkup($iPagename, $depth, $depth))."</ol>";
 			$str = preg_replace("\x01\\\\LinkUp".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
@@ -3471,7 +3471,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$depth = $_m[1];
 			$iPagename = addslashes($ipagename);
 			$LinkPool = array();
-			$r = "<ol class=\"linkdown\">\n".linkdown($iPagename, $depth, $depth)."</ol>";
+			$r = "<ol class=\"linkdown\">\n".str_replace("\\", "\x03", linkdown($iPagename, $depth, $depth))."</ol>";
 			$str = preg_replace("\x01\\\\LinkDown".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)

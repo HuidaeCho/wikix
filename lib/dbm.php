@@ -212,7 +212,6 @@ function uploadedfiles($Pagename, $table = 0){
 	if($n)
 		$ret .= ($opened?"</$tag0>\n</li>\n":"").
 			($table&&$Pagename!=""?"</table>\n":"</ol>\n");
-	$ret = str_replace("\\", "\x03", $ret);
 	pm_free_result($result);
 	return $ret;
 }
@@ -221,7 +220,7 @@ function linkup($Pagename, $depth, $idepth){
 	global	$db, $db_, $admin, $LinkPool;
 
 	$pagename0 = stripslashes($Pagename);
-	$pagename = str_replace("\\", "\x03", $pagename0);
+	$pagename = geni_specialchars($pagename0);
 	$pageName = geni_urlencode($pagename0);
 	$pagenamE = escape_doit($pagename0);
 
@@ -229,12 +228,12 @@ function linkup($Pagename, $depth, $idepth){
 		return "";
 
 	if(($pageid = pageid($Pagename)))
-		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\x03LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_display\" href=\"index.php?display=$pageName\">".geni_specialchars($pagename)."</a><a class=\"a\" href=\"index.php?1,doit=\x03LinkDown\{$pagenamE\}$depth\">&gt;</a>";
+		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\\LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_display\" href=\"index.php?display=$pageName\">$pagename</a><a class=\"a\" href=\"index.php?1,doit=\\LinkDown\{$pagenamE\}$depth\">&gt;</a>";
 	else{
-		$w = split_word($pagename);
+		$w = split_word($pagename0);
 		$w[0] = geni_specialchars($w[0]);
 		$w[1] = geni_specialchars($w[1]);
-		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\x03LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_goto\" href=\"index.php?goto=$pageName\">$w[0]</a>$w[1]<a class=\"a\" href=\"index.php?1,doit=\x03LinkDown\{$pagenamE\}$depth\">&gt;</a>";
+		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\\LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_goto\" href=\"index.php?goto=$pageName\">$w[0]</a>$w[1]<a class=\"a\" href=\"index.php?1,doit=\\LinkDown\{$pagenamE\}$depth\">&gt;</a>";
 	}
 
 	if(in_array($pagename0, $LinkPool)){
@@ -274,7 +273,7 @@ function linkdown($Pagename, $depth, $idepth){
 	global	$db, $db_, $admin, $LinkPool;
 
 	$pagename0 = stripslashes($Pagename);
-	$pagename = str_replace("\\", "\x03", $pagename0);
+	$pagename = geni_specialchars($pagename0);
 	$pageName = geni_urlencode($pagename0);
 	$pagenamE = escape_doit($pagename0);
 
@@ -282,12 +281,12 @@ function linkdown($Pagename, $depth, $idepth){
 		return "";
 
 	if(($pageid = pageid($Pagename)))
-		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\x03LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_display\" href=\"index.php?display=$pageName\">".geni_specialchars($pagename)."</a><a class=\"a\" href=\"index.php?1,doit=\x03LinkDown\{$pagenamE\}$depth\">&gt;</a>";
+		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\\LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_display\" href=\"index.php?display=$pageName\">$pagename</a><a class=\"a\" href=\"index.php?1,doit=\\LinkDown\{$pagenamE\}$depth\">&gt;</a>";
 	else{
-		$w = split_word($pagename);
+		$w = split_word($pagename0);
 		$w[0] = geni_specialchars($w[0]);
 		$w[1] = geni_specialchars($w[1]);
-		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\x03LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_goto\" href=\"index.php?goto=$pageName\">$w[0]</a>$w[1]<a class=\"a\" href=\"index.php?1,doit=\x03LinkDown\{$pagenamE\}$depth\">&gt;</a>";
+		$ret = "<li><a class=\"a\" href=\"index.php?1,doit=\\LinkUp\{$pagenamE\}$depth\">&lt;</a><a class=\"wikiword_goto\" href=\"index.php?goto=$pageName\">$w[0]</a>$w[1]<a class=\"a\" href=\"index.php?1,doit=\\LinkDown\{$pagenamE\}$depth\">&gt;</a>";
 	}
 
 	if(in_array($pagename0, $LinkPool)){
@@ -330,7 +329,7 @@ function linkdown($Pagename, $depth, $idepth){
 				$w[1] = geni_specialchars($w[1]);
 				$toPage = geni_urlencode($topage);
 				$dtoPage = escape_doit($topage);
-				$ret .= "<li><a class=\"a\" href=\"index.php?1,doit=\x03LinkUp\{$dtoPage\}$depth\">&lt;</a><a class=\"wikiword_goto\" href=\"index.php?goto=$toPage\">$w[0]</a>$w[1]<a class=\"a\" href=\"index.php?1,doit=\x03LinkDown\{$dtoPage\}$depth\">&gt;</a></li>\n";
+				$ret .= "<li><a class=\"a\" href=\"index.php?1,doit=\\LinkUp\{$dtoPage\}$depth\">&lt;</a><a class=\"wikiword_goto\" href=\"index.php?goto=$toPage\">$w[0]</a>$w[1]<a class=\"a\" href=\"index.php?1,doit=\\LinkDown\{$dtoPage\}$depth\">&gt;</a></li>\n";
 			}
 			$ret .= "</ol>\n";
 		}
