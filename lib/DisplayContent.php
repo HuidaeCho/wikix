@@ -152,8 +152,8 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"'\\\\endpostit(?![a-zA-Z])'",
 		"'\\\\`'",
 		"'\\\\[+^]'",
-		"'(?<=^|[ \t]|\\\\\.)([^ \t\n]+?)\\\\\.'m",
-		"'(?<=.)\\\\[,.]|\\\\[,.](?=.)'",
+		"'(?<=^|[ \t]|\\\\\.)([^ \t\r\n]+?)\\\\\.'m",
+		"'(?<=[^\r\n])\\\\[,.]|\\\\[,.](?=[^\r\n])'",
 		"'$wikiXword'",
 		"'(\\\\mafi\{.*?(?<!\\\\)\})'e",
 		"'(\\\\IncludeFile\{.*?(?<!\\\\)\})'e",
@@ -213,7 +213,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"tex(\\2+0, '\\3', '\\4', '\\1')",
 		"latex(\\2+0, '\\3', '\\4', '\\1')",
 		"gnuplot('\\2', '\\3', '\\1')",
-		"str_replace('\n', '\r', str_replace('$bs\"', '\"', '\\1'))",
+		"str_replace('\n', '\r\r', str_replace('$bs\"', '\"', '\\1'))",
 		"'${bs}right -- ['.('\\1'==''?'$author':'\\1').'] ${bs}smallnow'",
 		"<br class=\"br\" />",
 #		"<p class=\"p\"></p>",
@@ -915,7 +915,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				echo $endblock;
 			}
 		}
-		if(($n = preg_match_all("'\\\\bgroup([0-9]*)\r(.*?)\r".
+		if(($n = preg_match_all("'\\\\bgroup([0-9]*)\r\r(.*?)\r\r".
 			"\\\\egroup\\1(?![0-9a-zA-Z])'", $iline, $m))){
 			if($n > 1){
 				$m[2] = array_values(array_unique($m[2]));
@@ -945,7 +945,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$_dobr = $dobr;
 				$_table = $table;
 				$_ntdattrs = $ntdattrs;
-				$c = str_replace("\r", "\n", $m[2][$j]);
+				$c = str_replace("\r\r", "\n", $m[2][$j]);
 				$c = str_replace("&lt;", "<", $c);
 				$c = str_replace("&gt;", ">", $c);
 				$c = str_replace("&amp;", "&", $c);
@@ -955,10 +955,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				ob_end_clean();
 				$r = " \x06".escape_html(escape_bracket(
 					escape_misc(str_replace("!", "\x02!",
-					str_replace("\n", "\r",
+					str_replace("\n", "\r\r",
 					str_replace("\\", "\x03",
 					substr($r, 0, -1)))))))." \x06";
-				$iline = preg_replace("\x01\\\\bgroup([0-9]*)\r".preg_quote($m[2][$j])."\r\\\\egroup\\1(?![0-9a-zA-Z])\x01", $r, $iline);
+				$iline = preg_replace("\x01\\\\bgroup([0-9]*)\r\r".preg_quote($m[2][$j])."\r\r\\\\egroup\\1(?![0-9a-zA-Z])\x01", $r, $iline);
 			}
 			$iline = preg_replace("/^ \x06/", "", $iline);
 		}
@@ -1045,7 +1045,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$iline = str_replace("\x10", "", $iline);
 			$iline = str_replace("\x11", "", $iline);
 			$iline = str_replace("\x03", "\\", $iline);
-			$iline = str_replace("\r", "\n", $iline);
+			$iline = str_replace("\r\r", "\n", $iline);
 			$br = $dobr;
 			if($domysubs){
 				if($endblock != "")
