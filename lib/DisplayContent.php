@@ -1347,7 +1347,6 @@ function font($str){
 
 function html($str, &$ipair, &$pair){
 	global	$htmlDtag, $htmlStag, $netLink, $bs;
-	static	$ipair = 0, $pair = array();
 
 	if($htmlDtag == "" && $htmlStag == "")
 		return $str;
@@ -1688,8 +1687,6 @@ function wikiword($str, &$link){
 }
 
 function listing($str, &$ipair, &$pair, &$done, $closeall = 1){
-	static	$ipair = 0, $pair = array();
-
 	$done = 0;
 	if($str == ""){
 		if($closeall){
