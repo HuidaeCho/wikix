@@ -16,6 +16,7 @@ fi
 echo "Generating schema files..."
 for i in mysql pg idx_mysql idx_pg
 do
+	echo schema/$i.sql
 	sed "s/\${db_}/$1/g" < schema/$i.db_ > schema/$i.sql
 done
 
