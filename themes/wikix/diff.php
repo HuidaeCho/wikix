@@ -92,10 +92,8 @@ for($i=0; $i<$l; $i++,$m++,$n++){
 	if($x > $m && $y > $n){
 		echo "<tr><td class=\"diff_modified\"><tt>* ";
 		for(; $m<$x&&$n<$y; $m++,$n++){
-			$l0 = $line0[$m];
-			$l1 = $line1[$n];
-			$nl0 = strlen($l0);
-			$nl1 = strlen($l1);
+			$l0 = str2charray($line0[$m], $nl0);
+			$l1 = str2charray($line1[$n], $nl1);
 			for($is=0; $is<$nl0&&$s<$nl1&&$l0[$is]===$l1[$is];$is++)
 				echo $l1[$is];
 			for($ie0=$nl0-1,$ie1=$nl1-1; $ie0>=$is&&$ie1>=$is&&
@@ -149,9 +147,8 @@ for($i=0; $i<$l; $i++,$m++,$n++){
 	if($x > $m && $y > $n){
 		echo "<tr><td class=\"diff_modified\"><tt>* ";
 		for(; $m<$x&&$n<$y; $m++,$n++){
-			$l0 = $line0[$m];
-			$l1 = $line1[$n];
-			$nl1 = strlen($l1);
+			$l0 = str2charray($line0[$m], $nl0);
+			$l1 = str2charray($line1[$n], $nl1);
 			$im = $in = 0;
 			$idelta = lcs($l0, $l1, $il);
 			for($ii=0; $ii<$il; $ii++,$im++,$in++){

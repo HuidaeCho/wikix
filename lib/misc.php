@@ -87,34 +87,63 @@ function array_stripslashes(&$array){
 	}
 }
 
+function chlength($ch){
+	$l = 1;
+#utf8:	$h = ord($ch);
+#utf8:	if(($h & 0xfe) == 0xfc)
+#utf8:		$l = 6;
+#utf8:	else
+#utf8:	if(($h & 0xfc) == 0xf8)
+#utf8:		$l = 5;
+#utf8:	else
+#utf8:	if(($h & 0xf8) == 0xf0)
+#utf8:		$l = 4;
+#utf8:	else
+#utf8:	if(($h & 0xf0) == 0xe0)
+#utf8:		$l = 3;
+#utf8:	else
+#utf8:	if(($h & 0xe0) == 0xc0)
+#utf8:		$l = 2;
+#utf8:	/*
+	if(ord($ch) & 0x80)
+		$l = 2;
+#utf8:	*/
+	return $l;
+}
+
 function split_word($str){
 #dontsplitword:	$ret[0] = $str;
 #dontsplitword:	$ret[1] = "";
 #dontsplitword:	return $ret;
-#utf8:	$h = ord($str[0]);
-#utf8:	$s = 0;
-#utf8:	if(($h & 0xfe) == 0xfc)
-#utf8:		$s = 6;
-#utf8:	else
-#utf8:	if(($h & 0xfc) == 0xf8)
-#utf8:		$s = 5;
-#utf8:	else
-#utf8:	if(($h & 0xf8) == 0xf0)
-#utf8:		$s = 4;
-#utf8:	else
-#utf8:	if(($h & 0xf0) == 0xe0)
-#utf8:		$s = 3;
-#utf8:	else
-#utf8:	if(($h & 0xe0) == 0xc0)
-#utf8:		$s = 2;
-#utf8:	if($s){
-#utf8:		$ret[0] = substr($str, 0, $s);
-#utf8:		$ret[1] = substr($str, $s);
-#utf8:	/*
-	if(ord($str[0]) & 0x80){
-		$ret[0] = $str[0].$str[1];
-		$ret[1] = substr($str, 2);
-#utf8:	*/
+##utf8:	$h = ord($str[0]);
+##utf8:	$s = 0;
+##utf8:	if(($h & 0xfe) == 0xfc)
+##utf8:		$s = 6;
+##utf8:	else
+##utf8:	if(($h & 0xfc) == 0xf8)
+##utf8:		$s = 5;
+##utf8:	else
+##utf8:	if(($h & 0xf8) == 0xf0)
+##utf8:		$s = 4;
+##utf8:	else
+##utf8:	if(($h & 0xf0) == 0xe0)
+##utf8:		$s = 3;
+##utf8:	else
+##utf8:	if(($h & 0xe0) == 0xc0)
+##utf8:		$s = 2;
+##utf8:	if($s){
+##utf8:		$ret[0] = substr($str, 0, $s);
+##utf8:		$ret[1] = substr($str, $s);
+##utf8:	/*
+#	if(ord($str[0]) & 0x80){
+#		$ret[0] = $str[0].$str[1];
+#		$ret[1] = substr($str, 2);
+##utf8:	*/
+# begin: fast enough?
+	if(($s=chlength($str[0])) > 1){
+		$ret[0] = substr($str, 0, $s);
+		$ret[1] = substr($str, $s);
+# end: fast enough?
 	}else{
 		if(preg_match("/^(&#[0-9]+;)(.*)$/", $str, $m)){
 			$ret[0] = $m[1];
@@ -125,6 +154,18 @@ function split_word($str){
 		}
 	}
 	return $ret;
+}
+
+function str2charray($str, &$nchars){
+	$n = strlen($str);
+	$charray = array();
+	for($nchars=$i=0; $i<$n; $nchars++,$i+=$j){
+		if(($j = chlength($str[$i])) > 1)
+			$charray[$nchars] = substr($str, $i, $j);
+		else
+			$charray[$nchars] = $str[$i];
+	}
+	return $charray;
 }
 
 function escape_wikix($str){
@@ -1115,18 +1156,10 @@ function patch($content0, $diff){
 }
 
 function lcs($c0, $c1, &$l, $s=0, $e0=0, $e1=0){
-	if(!$e0){
-		if(is_array($c0))
-			$e0 = count($c0);
-		else
-			$e0 = strlen($c0);
-	}
-	if(!$e1){
-		if(is_array($c1))
-			$e1 = count($c1);
-		else
-			$e1 = strlen($c1);
-	}
+	if(!$e0)
+		$e0 = count($c0);
+	if(!$e1)
+		$e1 = count($c1);
 
 	$lcsl = array();
 	for($m=$s; $m<$e0; $m++){
