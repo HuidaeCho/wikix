@@ -233,7 +233,12 @@ then
 	grep ' => ' ext.log > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "####### INSTALL MANUALLY #######"
+		if [ $uninstall -eq 1 ]
+		then
+			echo "####### UNINSTALL MANUALLY #######"
+		else
+			echo "####### INSTALL MANUALLY #######"
+		fi
 		grep ' => ' ext.log
 	fi
 fi
