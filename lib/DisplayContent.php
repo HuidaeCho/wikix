@@ -340,7 +340,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dop = $_dop;
 		$dobr = $_dobr;
 
-		$nl = "";
 		$table = $_table;
 		$ntdattrs = $_ntdattrs;
 	}else{
@@ -365,7 +364,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dop = 1;
 		$dobr = "";
 
-		$nl = "\n";
 		$table = $tableAttr;
 		$ntdattrs = 1;
 	}
@@ -920,7 +918,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 					escape_misc(str_replace("!", "\x02!",
 					str_replace("\n", "\r",
 					str_replace("\\", "\x03",
-					$r))))))." \x06";
+					substr($r, 0, -1)))))))." \x06";
 				$iline = preg_replace("\x01\\\\bgroup([0-9]*)\r".preg_quote($m[2][$j])."\r\\\\egroup\\1(?![0-9a-zA-Z])\x01", $r, $iline);
 			}
 			$iline = preg_replace("/^ \x06/", "", $iline);
@@ -1017,7 +1015,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			}
 			if(substr($iline, -1) == "\n")
 				$iline = substr($iline, 0, -1);
-			echo "$endblock$iline$br$nl";
+			echo "$endblock$iline$br\n";
 		}
 	}
 	$depth--;
