@@ -6,13 +6,14 @@
 
 * ~를 단어 앞에 붙이면 그 단어를 포함하지 않은 문서를 찾는다.
 
-* 검색옵션: 검색조건 입력후 / 다음 t, c, i, r, ~, R, M, P, -, @를 조합해서 입력한다. /ti, /it, /tir
+* 검색옵션: 검색조건 입력후 / 다음 t, c, i, r, ~, h, R, M, P, -, @를 조합해서 입력한다. /ti, /it, /tir
 \nowikiword
 ** t: Title: 제목만 검색
 ** c: Content: 본문만 검색
 ** i: IgnoreCase: 대소문자 구분 안함
 ** r: RegularExpression: 정규표현식으로 검색
 ** ~: Range: 구간으로 검색
+** h: Highlight: 단어 혹은 정규표현식을 강조해서 보여 줌
 ** R: RecentChanges: 최근 수정된 글 순서
 ** M: MostPopular: 조회수 많은 글 순서
 ** P: RecentPages: 최근 생성된 글 순서
@@ -20,6 +21,7 @@
 ** @: Random: 무작위 출력
 ** R, M, P, -, @가 중복될 경우 늦게 지정된 것을 따른다.
 ** t, c가 중복될 경우 제목과 본문 동시에 조건을 만족해야 한다.
+** t, c 중에서 t만 지정되어 있거나, ~가 지정되어 있을 경우 h는 무시된다.
 \dowikiword
 
 * 검색단어의 마지막에 검색옵션과 같은 문자열이 올 경우 /를 덧붙여서 dummy option을 추가한다. /t/, /it/, \//

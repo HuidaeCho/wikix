@@ -6,13 +6,14 @@
 
 * You can also exclude a given word by prepending ~ to the word.
 
-* Options: Search options like t, c, i, r, ~, R, M, P, -, and @ can be specified to limit the result of the given condition. ex) /ti, /it, /tir
+* Options: Search options like t, c, i, r, ~, h, R, M, P, -, and @ can be specified to limit the result of the given condition. ex) /ti, /it, /tir
 \nowikiword
 ** t: Title: Search in title only
 ** c: Content: Search in content only
 ** i: IgnoreCase: Search case-insensitively
 ** r: RegularExpression: Search by regular expressions
 ** ~: Range: Search by ASCII code range
+** h: Highlight: Highlighting the given word or regular expressions
 ** R: RecentChanges: Sort the result by modified time
 ** M: MostPopular: Sort the result by hits count
 ** P: RecentPages: Sort the result by created time
@@ -20,6 +21,7 @@
 ** @: Random: Make the result random
 ** If R, M, P, -, and @ are specified more than once, the last one is used.
 ** If both t and c are specified, given condition should be matched both in title and content.
+** If only t is specified between t and c, or ~ is specified, then h is ignored.
 \dowikiword
 
 * It is possible to search for a slash(/) following words by using dummy option that is a slash which comes last in a condition statement. ex) /t/, /it/, and \// search for /t, /it, and / respectively.
