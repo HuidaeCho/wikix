@@ -56,6 +56,28 @@ function geni_urlencode($str){
 	return $str;
 }
 
+function strleft($str, $n){
+	$cut = substr($str, 0, $n);
+#utf8:	/*
+	preg_match('/^(&#[0-9]+;|[\x00-\x7f]|.{2})*/', $cut, $result);
+#utf8:	*/
+#utf8:	preg_match('/^([\x00-\x7e]|[\xc0-\xdf].|[\xe0-\xef].{2}|'.
+#utf8:		'[\xf0-\xf7].{3}|[\xf8-\xfb].{4}|[\xfc\xfd].{5})*/',
+#utf8:		$cut, $result);
+	return $result[0];
+}
+
+function strright($str, $n){
+	$cut = strrev(substr($str, -$n));
+#utf8:	/*
+	preg_match('/^([\x00-\x7f]|.{2})*/', $cut, $result);
+#utf8:	*/
+#utf8:	preg_match('/^([\x00-\x7e]|.[\xc0-\xdf]|.{2}[\xe0-\xef]|'.
+#utf8:		'.{3}[\xf0-\xf7]|.{4}[\xf8-\xfb]|.{5}[\xfc\xfd])*/',
+#utf8:		$cut, $result);
+	return strrev($result[0]);
+}
+
 function array_stripslashes(&$array){
 	while(list($key) = each($array)){
 		if(is_array($array[$key]))
@@ -573,7 +595,7 @@ function gnuplot($file, $str, $opt){
 	return "";
 }
 
-function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
+function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex, &$highlight){
 	global	$backendDB, $db_, $admin, $caseinsensitiveSearch;
 
 	if($caseinsensitiveSearch){
@@ -588,7 +610,9 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 	$regex = 0;
 	$iregex = "";
 	$range = 0;
-	if(preg_match("'(.*)/([-tcir~RMP@]*)$'", $search, $m)){
+	$highlight = "";
+	$use_highlight = 0;
+	if(preg_match("'(.*)/([-tcirh~RMP@]*)$'", $search, $m)){
 		$search = $m[1];
 		$l = strlen($m[2]);
 		for($i=0; $i<$l; $i++){
@@ -611,6 +635,9 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 			case "r":
 				$regex = 1;
 				$range = 0;
+				break;
+			case "h":
+				$use_highlight = 1;
 				break;
 			case "~":
 				$regex = 0;
@@ -666,6 +693,7 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 		$where = str_replace("\x01", "and", $where);
 		$where = str_replace("\x02", "or", $where);
 	}
+	$_where = $where;
 	if($range)
 		$where = str_replace(" ~ ", "\x02", $where);
 	$where = preg_replace("/\\\\x([0-9a-f]{2})/e", "chr(0x\\1)", $where);
@@ -682,6 +710,8 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 		$tcop = " or ";
 	}
 	if($regex){
+		if($use_highlight)
+			$highlight = $_where;
 		if($backendDB == "mysql")
 			$where = ($tc&0x1?"${ibegin}${db_}page.name$iend regexp
 					$ibegin'$where'$iend":"").$tcop.
@@ -707,6 +737,13 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 					$ibegin'$to'$iend":"").
 				($from==""?"":")");
 	}else{
+		if($use_highlight){
+			$querys = explode("\x03", $_where);
+			$nquerys = count($querys);
+			for($i=1;$i<$nquerys;$i+=2)
+				$highlight .= ($highlight==""?"":"|").
+					preg_quote($querys[$i]);
+		}
 		$where = str_replace("%", "\\%", $where);
 		$where = str_replace("_", "\\_", $where);
 		$where = preg_replace("/\x03(.*?)\x03/s",

@@ -305,6 +305,20 @@ ol.pagelist
 ol.pagelist li
 {
 }
+ul.pagelist_highilghted li
+{
+}
+ul.pagelist_highlighted li span.beforequery
+{
+}
+ul.pagelist_highlighted li span.query
+{
+	background-color:	black;
+	color:			white;
+}
+ul.pagelist_highlighted li span.afterquery
+{
+}
 /*******************************************************************************
  linkup
 *******************************************************************************/

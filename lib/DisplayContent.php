@@ -1910,10 +1910,15 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$query = search_query($search, $tc,
-						$ibegin, $iend, $order, $regex);
+						$ibegin, $iend, $order, $regex, $highlight);
 			$porder = ($order==""?1:$porder);
 			$color = (strpos($order, " order by ${db_}data.mtime ")===false?0:1);
-			$r = pagelist($query, $start, $ninfos, $porder, $color);
+			if($highlight == ""){
+				$r = pagelist($query, $start, $ninfos, $porder, $color);
+			}else{
+				$r = highlighted_pagelist($query, $start, $ninfos, $porder, $highlight);
+				$r = str_replace("\\", "\x03", $r);
+			}
 			$str = preg_replace("\x01\\\\SearchPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
@@ -3847,6 +3852,124 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 			$str .= "$tag4</table>";
 		}
 	}
+
+	return $str;
+}
+
+function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
+	global	$db, $db_, $admin, $author, $login, $btime, $now, $pageName,
+		$PageListFT, $limitlist;
+
+	$_extra = 30;
+	
+	$query = str_replace("\x02", $limitlist[0], $query);
+	$result = pm_query($db, $query);
+	if(!($n = pm_num_rows($result))){
+		pm_free_result($result);
+		return "";
+	}
+
+	$start += 0;
+	if($ninfos == "")
+		$end = $start + $n;
+	else
+		$end = $start + $ninfos;
+	if($end < 1 || $end > $n)
+		$end = $n;
+	$nr = $end - $start;
+	if($nr < 1)
+		return "";
+
+	$index = range(0, $n-1);
+	if($order == 1)
+		shuffle($index);
+	else
+	if($order == 2)
+		$index = array_reverse($index);
+
+	$mode = 0;
+
+	if($ninfos[0] === "0" &&
+			preg_match("/^(0+)/", $ninfos, $_m)){
+		switch("x$_m[1]"){
+		case "x0":
+			$mode = 1;
+			break;
+		case "x00":
+			$mode = 2;
+			break;
+		}
+	}
+	
+	if($mode == 2)
+		$str = "<ul class=\"pagelist\">\n";
+	else
+		$str = "<ol class=\"pagelist\">\n";
+	$date = "";
+	$class = "recent";
+	for($i=$start; $i<$end; $i++){
+		$data = pm_fetch_array($result, $index[$i]);
+		list($mdate, $mtime) = explode(" ", $data['mtime']);
+		$bmtime = strtotime($data['mtime']);
+
+		$ipagename = $data['name'];
+		$ipageName = geni_urlencode($ipagename);
+		$ipagename = str_replace("\\", "\x03", $ipagename);
+		$iauthor = geni_urlencode($data['author']);
+
+		$bclass = "general";
+		if($data['deleted'] == 1 || $data['deleted'] == "t"){
+			if($btime != "" && $data['mtime'] > $btime)
+				$bclass = "deleted";
+			else
+				$bclass = "deleted0";
+			$action = "goto";
+			$w = split_word($ipagename);
+			$w[0] = geni_specialchars($w[0]);
+			$w[1] = geni_specialchars($w[1]);
+		}else{
+			if($btime != "" && $data['mtime'] > $btime){
+				if($data['ctime'] > $btime)
+					$bclass = "new";
+				else
+					$bclass = "updated";
+			}
+			$action = "display";
+			$w[0] = geni_specialchars($ipagename);
+			$w[1] = "";
+		}
+
+		$str .=
+"<li><a class=\"wikiword_$action\" href=\"index.php?$action=$ipageName\"".
+($mode?" title=\"$data[author] ... $data[mtime]\"":"").">$w[0]</a>$w[1]".
+($mode?"":" ... ".
+(pageid($data['author'])?
+"<a class=\"a\" href=\"index.php?display=$iauthor\">$data[author]</a>":$data['author']).
+" ... <small class=\"small\">".($login?"<a class=\"a\" href=\"index.php?$bmtime,bookmark=$pageName\"><span class=\"$bclass\">":"").$mdate.($login?"</span></a>":"")." <a class=\"a\" href=\"index.php?diff=$ipageName\"><span class=\"$bclass\">$mtime</span></a></small>").
+"</li>\n".
+"<ul class=\"pagelist_highlighted\">\n";
+		
+		$content = page_content($data['id'], "${db_}page.version");
+		$splited = explode("\x00", preg_replace("/$pattern/", "\x00\\0\x00", $content));
+		$nsplited = count($splited) - 1;
+		$pstart = $pdone = 0;
+		for($j=0;$j<$nsplited;$j+=2){
+			$pstart = $pdone + strlen($splited[$j]);
+			$pdone = $pstart + strlen($splited[$j+1]);
+			
+			$str .= "<li><span class=\"beforequery\">".
+				strright(substr($content, 0, $pstart), $_extra).
+				"</span><span class=\"query\">".
+				$splited[$j+1].
+				"</span><span class=\"afterquery\">".
+				strleft(substr($content, $pdone), $_extra).
+				"</li>\n";
+		}
+		
+		$str .= "</ul>\n";
+	}
+	pm_free_result($result);
+	$str .= ($mode==2?"</ul>":"</ol>");
 
 	return $str;
 }

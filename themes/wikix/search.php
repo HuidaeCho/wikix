@@ -5,8 +5,13 @@
 ($tc&0x1?"Title":"").(($tc&0x3)==0x3?($tc&0x4?"|":"&"):"").
 ($tc&0x2?"Content":"")." / ".
 ($ibegin==""?"Dont":"")."IgnoreCase".
-($regex?" / RegularExpression":"")."<br />\n".
-str_replace("\x03", "\\", pagelist($query, 0, 0, $random, $color))
+($regex?" / RegularExpression":"")." / ".
+($highlight==""?"No":"")."Highlighted"."<br />\n".
+str_replace("\x03", "\\", ($highlight==""?
+	pagelist($query, 0, 0, $random, $color)
+:
+	highlighted_pagelist($query, 0, 0, $random, $highlight)
+))
 ?>
 
 <hr noshade />
