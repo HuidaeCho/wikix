@@ -1,19 +1,16 @@
 <?
 if(!$admin && is_site_hidden()){
-	$msgid = "HIDDEN_SITE";
-	include_once("$mytheme/exit.php");
+	echo "Sorry, it's a hidden sit<a class=\"general\" href=\"admin.php?$arg\">e</a>.\n";
 	return;
 }
 
 if(!($id = pageid0($Pagename))){
-	$msgid = "NO_SUCH_PAGE";
-	include_once("$mytheme/exit.php");
+	echo "$pagename: No such page found.\n";
 	return;
 }
 
 if(!$admin && is_hidden($Pagename)){
-	$msgid = "HIDDEN_PAGE";
-	include_once("$mytheme/exit.php");
+	echo "$pagename: Sorry, it's a hidden page.\n";
 	return;
 }
 
@@ -32,8 +29,7 @@ if(($r = pm_num_rows($result)))
 	$data = pm_fetch_array($result, 0);
 pm_free_result($result);
 if(!$r){
-	$msgid = "NO_SUCH_VERSION";
-	include_once("$mytheme/exit.php");
+	echo "<a class=\"wikiword_display\" href=\"index.php?display=$pageName\">$pagename</a> v$version: No such page version found.\n";
 	return;
 }
 
