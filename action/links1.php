@@ -18,7 +18,7 @@ $query = "select ${db_}page.name from ${db_}link, ${db_}page
 $result1 = pm_query($db, $query);
 $nlinks1 = pm_num_rows($result1);
 
-$query = "select linktoname  ${db_}link
+$query = "select linktoname from ${db_}link
 			where linkfrom=$id and linkto=0
 			order by linktoname";
 $result2 = pm_query($db, $query);

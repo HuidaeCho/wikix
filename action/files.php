@@ -28,7 +28,7 @@ if($pagename == ""){
 		$v0 = "";
 	if(($id = pageid($Pagename))){
 		$doit = "display";
-		$w[0] = geni_specialchars($pagename0);
+		$w[0] = $pagename;
 		$w[1] = "";
 	}else{
 		$doit = "goto";

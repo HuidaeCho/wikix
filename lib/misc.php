@@ -31,16 +31,16 @@ function geni_unspecialchars($str){
 	return $str;
 }
 
+function geni_whitespaces($str){
+	$str = str_replace("\t", "        ", $str);
+	$str = str_replace(" ", "&nbsp;", $str);
+	return $str;
+}
+
 function geni_trim($str){
 	$str = preg_replace("/^[ \t\r\n]+\n/", "\n", $str);
 	$str = preg_replace("/\n[ \t\r\n]+$/", "\n", $str);
 	$str = preg_replace("/^[ \t]+$/", "", $str);
-	return $str;
-}
-
-function geni_whitespaces($str){
-	$str = str_replace("\t", "        ", $str);
-	$str = str_replace(" ", "&nbsp;", $str);
 	return $str;
 }
 
@@ -54,28 +54,6 @@ function geni_urlencode($str){
 	$str = preg_replace("/%([8-9A-F].)/e", "chr(0x\\1)", $str);
 #urlencode:	*/
 	return $str;
-}
-
-function strleft($str, $n){
-	$cut = substr($str, 0, $n);
-#utf8:	/*
-	preg_match('/^(&#[0-9]+;|[\x00-\x7f]|.{2})*/', $cut, $result);
-#utf8:	*/
-#utf8:	preg_match('/^([\x00-\x7e]|[\xc0-\xdf].|[\xe0-\xef].{2}|'.
-#utf8:		'[\xf0-\xf7].{3}|[\xf8-\xfb].{4}|[\xfc\xfd].{5})*/',
-#utf8:		$cut, $result);
-	return $result[0];
-}
-
-function strright($str, $n){
-	$cut = strrev(substr($str, -$n));
-#utf8:	/*
-	preg_match('/^([\x00-\x7f]|.{2})*/', $cut, $result);
-#utf8:	*/
-#utf8:	preg_match('/^([\x00-\x7e]|.[\xc0-\xdf]|.{2}[\xe0-\xef]|'.
-#utf8:		'.{3}[\xf0-\xf7]|.{4}[\xf8-\xfb]|.{5}[\xfc\xfd])*/',
-#utf8:		$cut, $result);
-	return strrev($result[0]);
 }
 
 function array_stripslashes(&$array){
@@ -111,61 +89,51 @@ function chlength($ch){
 	return $l;
 }
 
+function strleft($str, $n){
+	$str = substr($str, 0, $n);
+#utf8:	/*
+	preg_match('/^(&#[0-9]+;|[\x00-\x7f]|.{2})*$/', $str, $ret);
+#utf8:	*/
+#utf8:	preg_match('/^(&#[0-9]+;|[\x00-\x7e]|[\xc0-\xdf].|[\xe0-\xef].{2}|'.
+#utf8:		'[\xf0-\xf7].{3}|[\xf8-\xfb].{4}|[\xfc\xfd].{5})*$/',
+#utf8:		$str, $ret);
+	return $ret[0];
+}
+
+function strright($str, $n){
+	$str = strrev(substr($str, -$n));
+#utf8:	/*
+	preg_match('/^(;[0-9]+#&|[\x00-\x7f]|.{2})*$/', $str, $ret);
+#utf8:	*/
+#utf8:	preg_match('/^(;[0-9]+#&|[\x00-\x7e]|.[\xc0-\xdf]|.{2}[\xe0-\xef]|'.
+#utf8:		'.{3}[\xf0-\xf7]|.{4}[\xf8-\xfb]|.{5}[\xfc\xfd])*$/',
+#utf8:		$str, $ret);
+	return strrev($ret[0]);
+}
+
 function split_word($str){
 #dontsplitword:	$ret[0] = $str;
 #dontsplitword:	$ret[1] = "";
 #dontsplitword:	return $ret;
-##utf8:	$h = ord($str[0]);
-##utf8:	$s = 0;
-##utf8:	if(($h & 0xfe) == 0xfc)
-##utf8:		$s = 6;
-##utf8:	else
-##utf8:	if(($h & 0xfc) == 0xf8)
-##utf8:		$s = 5;
-##utf8:	else
-##utf8:	if(($h & 0xf8) == 0xf0)
-##utf8:		$s = 4;
-##utf8:	else
-##utf8:	if(($h & 0xf0) == 0xe0)
-##utf8:		$s = 3;
-##utf8:	else
-##utf8:	if(($h & 0xe0) == 0xc0)
-##utf8:		$s = 2;
-##utf8:	if($s){
-##utf8:		$ret[0] = substr($str, 0, $s);
-##utf8:		$ret[1] = substr($str, $s);
-##utf8:	/*
-#	if(ord($str[0]) & 0x80){
-#		$ret[0] = $str[0].$str[1];
-#		$ret[1] = substr($str, 2);
-##utf8:	*/
-# begin: fast enough?
-	if(($s=chlength($str[0])) > 1){
-		$ret[0] = substr($str, 0, $s);
-		$ret[1] = substr($str, $s);
-# end: fast enough?
-	}else{
-		if(preg_match("/^(&#[0-9]+;)(.*)$/", $str, $m)){
-			$ret[0] = $m[1];
-			$ret[1] = $m[2];
-		}else{
-			$ret[0] = $str[0];
-			$ret[1] = substr($str, 1);
-		}
-	}
+#utf8:	/*
+	preg_match('/^(&#[0-9]+;|[\x00-\x7f]|.{2})(.*)$/', $str, $ret);
+#utf8:	*/
+#utf8:	preg_match('/^(&#[0-9]+;|[\x00-\x7e]|[\xc0-\xdf].|[\xe0-\xef].{2}|'.
+#utf8:		'[\xf0-\xf7].{3}|[\xf8-\xfb].{4}|[\xfc\xfd].{5})(.*)$/',
+#utf8:		$str, $ret);
+	array_shift($ret);
 	return $ret;
 }
 
 function str2charray($str, &$nchars){
-	$n = strlen($str);
-	$charray = array();
-	for($nchars=$i=0; $i<$n; $nchars++,$i+=$j){
-		if(($j = chlength($str[$i])) > 1)
-			$charray[$nchars] = substr($str, $i, $j);
-		else
-			$charray[$nchars] = $str[$i];
-	}
-	return $charray;
+#utf8:	/*
+	$nchars = preg_match_all('/(&(?:#[0-9]+|[0-9a-z]+);|[\x00-\x7f]|.{2})/',
+			$str, $ret);
+#utf8:	*/
+#utf8:	$nchars = preg_match('/(&(?:#[0-9]+|[0-9a-z]+);|[\x00-\x7e]|'.
+#utf8:			'[\xc0-\xdf].|[\xe0-\xef].{2}|[\xf0-\xf7].{3}|'.
+#utf8:			'[\xf8-\xfb].{4}|[\xfc\xfd].{5})/', $str, $ret);
+	return $ret[1];
 }
 
 function escape_wikix($str){
@@ -740,10 +708,10 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 		$where = str_replace("\x01", "and", $where);
 		$where = str_replace("\x02", "or", $where);
 	}
-	$_where = $where;
 	if($range)
 		$where = str_replace(" ~ ", "\x02", $where);
 	$where = preg_replace("/\\\\x([0-9a-f]{2})/e", "chr(0x\\1)", $where);
+	$_where = $where;
 	if(!$regex)
 		$where = str_replace("\\", "\\\\", $where);
 	$where = addslashes($where);

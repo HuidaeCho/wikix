@@ -1450,8 +1450,8 @@ function bracket($str, &$link, $dointerwiki){
 		$linkimg = preg_match("'^(?:$netLink).*?\.(?:$imgExt)$'i",
 				$linkname);
 		$linkname = str_replace("\x05 \x06", "", $linkname);
-		$linkname = stripslashes($linkname);
-		$linkname = geni_whitespaces($linkname);
+		$linkname0 = stripslashes($linkname);
+		$linkname = geni_whitespaces($linkname0);
 
 		if(preg_match("'^(?:$netLink)'i", $pagename)){
 			$pageimg = preg_match("/\.(?:$imgExt)$/i", $pagename);
@@ -1496,7 +1496,7 @@ function bracket($str, &$link, $dointerwiki){
 						$r = "<a href=\"index.php?goto=$Pagename\"><img class=\"wikiword_goto\" src=\"$linkname\" alt=\"$pagename\" /></a>";
 					}else{
 						$linkname = clean4bracket($linkname);
-						$linkname = geni_unspecialchars($linkname);
+						$linkname = geni_unspecialchars($linkname0);
 						$w = split_word($linkname);
 						$w[0] = geni_specialchars($w[0]);
 						$w[1] = geni_specialchars($w[1]);

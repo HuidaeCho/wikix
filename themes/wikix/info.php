@@ -18,7 +18,7 @@ if($pagename0 === $wikiXfrontpage0){
 	echo "<span style=\"color:blue;\">site size: $size</span><br />\n";
 }
 
-if($admin||!$page['locked']){
+if($admin || !$page['locked']){
 	$query = "select sum(length(content)) from ${db_}data where id=$id";
 	$result0 = pm_query($db, $query);
 	$size = pm_fetch_result($result0, 0, 0);
@@ -99,7 +99,7 @@ for($i=0; $i<$nversions; $i++){
 }
 pm_free_result($result);
 $DeleteOrUndeletePage = "";
-if($admin||!$page['locked'])
+if($admin || (!$page['locked'] && (!$mustLogin || $login)))
 	$DeleteOrUndeletePage = ($deleted?
 		"| <a href=\"index.php?undelete=$pageName\">UndeletePage</a>":
 		"| <a href=\"index.php?delete=$pageName\">DeletePage</a>");

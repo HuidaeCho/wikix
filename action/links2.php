@@ -12,7 +12,7 @@ if(!$admin){
 if(($id = pageid($Pagename))){
 	$where = "${db_}link.linkto=$id";
 	$doit = "display";
-	$w[0] = geni_specialchars($pagename0);
+	$w[0] = $pagename;
 	$w[1] = "";
 }else{
 	$where = "${db_}link.linktoname='$Pagename'";
