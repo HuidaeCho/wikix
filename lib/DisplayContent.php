@@ -389,10 +389,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		switch($iline){
 		case "":
 			if($mode){
-				$iline = $dobr;
 				if(!$dop)
-					$iline .= "\n";
+					$iline = "$dobr\n";
 				else{
+					$iline = "";
 					$blankline = ($blankline && !$iclose);
 					for(; --$iclose>=0; ){
 						if($close[$iclose] == 1)
@@ -993,6 +993,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$iline = heading($iline, $hastoc);
 			if($dolinebreak)
 				$iline = linebreak($iline);
+			$br = $dobr;
 			$done = 0;
 			$endblock = "";
 			if($dotable || $close[$iclose-1] == 1){
@@ -1005,6 +1006,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 							$iclose--;
 						if($done > 1)
 							$close[$iclose++] = 1;
+						$br = "";
 					}else
 					if($endblock != "")
 						$iclose--;
@@ -1019,6 +1021,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 					if($done){
 						if($done > 1)
 							$close[$iclose++] = 2;
+						$br = "";
 					}else
 					if($endblock0 != "")
 						$iclose--;
@@ -1054,7 +1057,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$iline = str_replace("\x11", "", $iline);
 			$iline = str_replace("\x03", "\\", $iline);
 			$iline = str_replace("\r\r", "\n", $iline);
-			$br = $dobr;
 			if($domysubs){
 				if($endblock != "")
 					$endblock = mysubs($endblock);
@@ -3626,6 +3628,9 @@ function pre($str, &$isblock, &$done){
 		return $str;
 	}
 	$done = 1;
+
+	if(substr($str, 0, 1) == " ")
+		$str = substr($str, 1);
 
 	if(!($isblock&0x2)){
 		$done = 2;
