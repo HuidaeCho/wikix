@@ -1,0 +1,72 @@
+;:\SearchPages
+
+* You can search pages by combining words with __&__(and) and __|__(or). There must be a blank in front and rear of them, otherwise each conditional operator will be a part of the word to search for. You will get a better result only by choosing proper words and operators.
+
+* Keep in mind that blanks unadjacent immediately to a conditional operator will be target characters.
+
+* You can also exclude a given word by prepending ~ to the word.
+
+* Options: Search options like t, c, i, r, ~, R, M, P, -, and @ can be specified to limit the result of the given condition. ex) /ti, /it, /tir
+\nowikiword
+** t: Title: Search in title only
+** c: Content: Search in content only
+** i: IgnoreCase: Search case-insensitively
+** r: RegularExpression: Search by regular expressions
+** ~: Range: Search by ASCII code range
+** R: RecentChanges: Sort the result by modified time
+** M: MostPopular: Sort the result by hits count
+** P: RecentPages: Sort the result by created time
+** -: Reverse: Reverse the result of the sorted result
+** @: Random: Make the result random
+** If R, M, P, -, and @ are specified more than once, the last one is used.
+** If both t and c are specified, given condition should be matched both in title and content.
+\dowikiword
+
+* It is possible to search for a slash(/) following words by using dummy option that is a slash which comes last in a condition statement. ex) /t/, /it/, and \// search for /t, /it, and / respectively.
+
+
+! Examples
+\nowikiword
+
+* __( this | that) &\  this place\  &\    three spaces just in front of this phrase__
+%%%
+The first blank followed by 'this' is a part of the word, so the first word is ' this'; ' | ' and ' & ' are conditional operators. Therefore this condition is used to search for pages which contain ' this' or 'that', and ' this place ' and '\   three spaces just in front of this phrase'.
+%%%
+Note that the four spaces in front of 'three spaces' are not all part of the condition because & should eat up two adjacent spaces to be an __and__ conditional operator.
+
+* __(wiKiX&CellVic & wikiZ) | PDA__
+%%%
+Search for pages which contain 'wiKiX&CellVic' and 'wikiZ'; or 'PDA'.
+
+* __wikiz/i__
+%%%
+Search case-insensitively for pages which contain wikiz. ex) wikiz, wikiZ, wIkIz,...
+
+* __~WikiWiki & wikiZ__
+%%%
+Search for pages which have no 'WikiWiki' but have 'wikiZ'.
+
+* __a ~b__
+%%%
+In this case, ~ is not an __exclude__ operator because it is not adjacent to & nor |, so the word is 'a ~b' itself.
+
+* __~(a | b)__
+%%%
+If you think that the above condition is equivalent to __~a & ~b__, it's absolutely wrong; ~ operator can not be applicable in front of parentheses. It's not a valid condition, so no page might be searched for.
+
+* __a/t~__ or __a ~ /t~__
+%%%
+Search for page names which start with 'a' or above 'a' in ASCII value(>='a').%%%
+Note that ~ operator should also be surrounded by two spaces.
+
+* __a ~ ca/t~__
+%%%
+Search for page names which start with >='a' and <'ca'.
+
+* __D ~ \\x74/t~__
+%%%
+Search for page names which start with >='D' and <0x74 hexadecimal ASCII code.
+
+* __ ~ s/t~__
+%%%
+Search for page names which start with <'s'.
