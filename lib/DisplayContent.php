@@ -1852,8 +1852,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 	}
 	if(preg_match("'^\\\\PageListFT:([01])$'", $str, $m)){
 		$PageListFT = $m[1];
-		if(strpos($str, "\\") === false)
-			return $str;
+		return "";
 	}
 	if(preg_match("'^\\\\LimitList:(!?L)?(!?H)?(?:(?:(!)?([0-9]{4}(?:-[0-9]{2}(?:-[0-9]{2})?)?(?: [0-9]{2}(?::[0-9]{2}(?::[0-9]{2})?)?)?))?~(?:(!)?([0-9]{4}(?:-[0-9]{2}(?:-[0-9]{2})?)?(?: [0-9]{2}(?::[0-9]{2}(?::[0-9]{2})?)?)?))?(/P)?)?$'", $str, $m)){
 		$limitlist[0] = "";
