@@ -32,6 +32,13 @@ for($i=0; $i<$n; $i++){
 			$query = "update ${db_}page set name='$tname'
 						where id=$id";
 			$result0 = pm_query($db, $query);
+			if($Pagename == $name){
+				$pagename0 = $data['tname'];
+				$pagename = geni_specialchars($pagename0);
+				$Pagename = addslashes($pagename0);
+				$pageName = geni_urlencode($pagename0);
+				$pagenamE = escape_doit($pagename0);
+			}
 		}
 	}
 	if($tversion == $version)
