@@ -1914,7 +1914,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$porder = ($order==""?1:$porder);
 			$color = (strpos($order,
 				" order by ${db_}data.mtime ")===false?0:1);
-			if($highlight == ""){
+			if($highlight == "" || $tc == 0x1){
 				$r = pagelist($query, $start, $ninfos, $porder,
 									$color);
 			}else{
