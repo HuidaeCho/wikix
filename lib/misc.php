@@ -748,7 +748,7 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 		if($use_highlight){
 			$queries = explode("\x03", $_where);
 			$nqueries = count($queries);
-			for($i=1;$i<$nqueries;$i+=2)
+			for($i=1; $i<$nqueries; $i+=2)
 				$highlight .= ($highlight==""?"":"|").
 					preg_quote($queries[$i]);
 		}
