@@ -670,7 +670,7 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 				break;
 			}
 		}
-		if($tc & 0x2 != 0x2)
+		if($tc == 0x1)
 			$use_highlight = 0;
 	}
 	if($regex && $backendDB != "mysql" && $ibegin != "")
