@@ -90,8 +90,8 @@ $delta = lcs($line0, $line1, $l, $s, $e0, $e1);
 for($i=0; $i<$l; $i++,$m++,$n++){
 	list($x, $y) = explode(",", $delta[$i]);
 	if($x > $m && $y > $n){
-		echo "<tr><td class=\"diff_modified\"><tt>* ";
 		for(; $m<$x&&$n<$y; $m++,$n++){
+			echo "<tr><td class=\"diff_modified\"><tt>* ";
 			$l0 = str2charray($line0[$m], $nl0);
 			$l1 = str2charray($line1[$n], $nl1);
 			for($is=0; $is<$nl0&&$s<$nl1&&$l0[$is]===$l1[$is];$is++)
@@ -121,8 +121,8 @@ for($i=0; $i<$l; $i++,$m++,$n++){
 			}
 			for($ii=$ie1; $ii<$nl1; $ii++)
 				echo $l1[$ii];
+			echo "</td></tr>\n";
 		}
-		echo "</td></tr>\n";
 	}
 	if($x > $m){
 		for(; $m<$x; $m++)
@@ -145,8 +145,8 @@ $delta = lcs($line0, $line1, $l);
 for($i=0; $i<$l; $i++,$m++,$n++){
 	list($x, $y) = explode(",", $delta[$i]);
 	if($x > $m && $y > $n){
-		echo "<tr><td class=\"diff_modified\"><tt>* ";
 		for(; $m<$x&&$n<$y; $m++,$n++){
+			echo "<tr><td class=\"diff_modified\"><tt>* ";
 			$l0 = str2charray($line0[$m], $nl0);
 			$l1 = str2charray($line1[$n], $nl1);
 			$im = $in = 0;
@@ -168,8 +168,8 @@ for($i=0; $i<$l; $i++,$m++,$n++){
 				if($in < $nl1)
 					echo $l1[$in];
 			}
+			echo "</td></tr>\n";
 		}
-		echo "</td></tr>\n";
 	}
 	if($x > $m){
 		for(; $m<$x; $m++)
