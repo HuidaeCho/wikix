@@ -8,10 +8,8 @@
 ($regex?" / RegularExpression":"")." / ".
 ($highlight==""?"Dont":"")."Highlight"."<br />\n".
 str_replace("\x03", "\\", ($highlight==""?
-	pagelist($query, 0, 0, $random, $color)
-:
-	highlighted_pagelist($query, 0, 0, $random, $highlight)
-))
+	pagelist($query, 0, 0, $random, $color):
+	highlighted_pagelist($query, 0, 0, $random, $highlight)))
 ?>
 
 <hr noshade />

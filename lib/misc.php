@@ -746,9 +746,9 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 		if($use_highlight){
 			$queries = explode("\x03", $_where);
 			$nqueries = count($queries);
-			for($i=1; $i<$nqueries; $i+=2)
-				$highlight .= ($highlight==""?"":"|").
-					preg_quote($queries[$i]);
+			$highlight = preg_quote($queries[1]);
+			for($i=3; $i<$nqueries; $i+=2)
+				$highlight .= "|".preg_quote($queries[$i]);
 		}
 		$where = str_replace("%", "\\%", $where);
 		$where = str_replace("_", "\\_", $where);

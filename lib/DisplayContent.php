@@ -1915,8 +1915,8 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$color = (strpos($order,
 				" order by ${db_}data.mtime ")===false?0:1);
 			if($highlight == "" || $tc == 0x1)
-				$r = pagelist($query, $start, $ninfos, $porder,
-									$color);
+				$r = pagelist($query, $start, $ninfos,
+						$porder, $color);
 			else
 				$r = highlighted_pagelist($query, $start,
 						$ninfos, $porder, $highlight);
@@ -3948,8 +3948,8 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 "\n<ul class=\"pagelist_highlighted\">\n";
 
 		$content = page_content($data['id'], "${db_}page.version");
-		$splitted = explode("\x00", preg_replace("/$pattern/",
-					"\x00\\0\x00", $content));
+		$splitted = explode("\x01", preg_replace("/$pattern/",
+						"\x01\\0\x01", $content));
 		$nsplitted = count($splitted) - 1;
 		$pstart = $pdone = 0;
 		for($j=0; $j<$nsplitted; $j+=2){
