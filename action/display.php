@@ -1,18 +1,18 @@
 <?
 if(!$admin && is_site_hidden()){
-	$error = 'hidden_site';
+	$msgid = "HIDDEN_SITE";
 	include_once("$mytheme/error.php");
 	return;
 }
 
 if(!($id = pageid0($Pagename))){
-	$error = 'no_page';
+	$msgid = "NO_SUCH_PAGE";
 	include_once("$mytheme/error.php");
 	return;
 }
 
 if(!$admin && is_hidden($Pagename)){
-	$error = 'hidden_page';
+	$msgid = "HIDDEN_PAGE";
 	include_once("$mytheme/error.php");
 	return;
 }

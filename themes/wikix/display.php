@@ -24,7 +24,7 @@ document.forms.search.elements.search.focus();
 <?}?>
 
 <h1 class="title"><a accesskey="z" class="general" href="index.php?<?=$title_action?>"><?=$pagename?></a><a href="index.php?<?=($action=="display"?"::":"")."display=$pageName"?>">&nbsp;</a></h1>
-<br />
+
 <?
 include_once("mywikix/header.php");
 $link = DisplayContent("$wikiXheader$data[content]$wikiXfooter");
