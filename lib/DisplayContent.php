@@ -181,10 +181,9 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"'&(?!#[0-9]+;)'",
 		"'://host(?![.0-9a-zA-Z])'",
 		"'://wikix(?![.0-9a-zA-Z])'",
-		"'://myfile(?![.0-9a-zA-Z])'",
-		"'://file(?![.0-9a-zA-Z])'",
 		"'://self(?![.0-9a-zA-Z])'",
 		"'://uri(?![.0-9a-zA-Z])'",
+		"'://(my[a-z]+|file0?)(?![.0-9a-zA-Z])'",
 	);
 	$replace = array(
 		"('\\2'==''?j(\\4+0):j(\\1+0, '\\2', \\3+0))",
@@ -263,10 +262,9 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"&amp;",
 		"://$host",
 		"://$host$scriptdir",
-		"://$host$scriptdir/myfile",
-		"://$host$scriptdir/file",
 		"://$host$script",
 		"://$host$euri",
+		"://$host$scriptdir/\\1",
 	);
 	$content = preg_replace($pattern, $replace, $content);
 
