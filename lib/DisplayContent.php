@@ -466,25 +466,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		if($cont)
 			continue;
 		$blankline = 0;
-		if(!$domultilinelisting && strpos("*#;", $iline[0]) === false &&
-				$iclose > 0 && $close[$iclose-1] == 3){
-			if($mode){
-				$str = "";
-				for(; --$iclose>=0; ){
-					if($close[$iclose] == 1)
-						$str .= table("", $isblock, $table, $ntattrs, $done);
-					else
-					if($close[$iclose] == 2)
-						$str .= pre("", $isblock, $done);
-					else
-					if($close[$iclose] == 3)
-						$str .= listing("", $done);
-				}
-				$iclose++;
-				if($domysubs)
-					echo mysubs($str);
-			}
-		}
 		if($iline[0] == "\\"){
 		$cont = 0;
 		switch($iline){
@@ -914,6 +895,25 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		if($cont)
 			continue;
 		}
+		if(!$domultilinelisting && strpos("*#;", $iline[0]) === false &&
+				$iclose > 0 && $close[0] == 3){
+			if($mode){
+				$str = "";
+				for(; --$iclose>=0; ){
+					if($close[$iclose] == 1)
+						$str .= table("", $isblock, $table, $ntattrs, $done);
+					else
+					if($close[$iclose] == 2)
+						$str .= pre("", $isblock, $done);
+					else
+					if($close[$iclose] == 3)
+						$str .= listing("", $done);
+				}
+				$iclose++;
+				if($domysubs)
+					echo mysubs($str);
+			}
+		}
 		if(($n = preg_match_all("'\\\\bgroup([0-9]*)\r(.*?)\r".
 			"\\\\egroup\\1(?![0-9a-zA-Z])'", $iline, $m))){
 			if($n > 1){
@@ -992,9 +992,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 					if($done){
 						if($endblock == "")
 							continue;
-						if($done == 2)
+						if($done == 3)
 							$iclose--;
-						$close[$iclose++] = 1;
+						if($done > 1)
+							$close[$iclose++] = 1;
 					}else
 					if($endblock != "")
 						$iclose--;
@@ -1006,9 +1007,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			if(($dopre || $close[$iclose-1] == 2) && !$done){
 				if($dopre){
 					$endblock0 = pre($iline, $isblock, $done);
-					if($done)
-						$close[$iclose++] = 2;
-					else
+					if($done){
+						if($done > 1)
+							$close[$iclose++] = 2;
+					}else
 					if($endblock0 != "")
 						$iclose--;
 				}else{
@@ -3526,10 +3528,11 @@ function table($str, &$isblock, &$table, &$ntdattrs, &$done){
 	$n = preg_match_all("/(\|+)(v*)(\^|&lt;|&gt;)?([^|]*)/", $str, $m);
 	$str = "";
 	if(!($isblock&0x1)){
+		$done = 2;
 		$isblock |= 0x1;
 		$str = pre("", $isblock, $i);
 		if($str != "")
-			$done = 2;
+			$done = 3;
 		$str .= "<table$table[0]>\n";
 	}
 	$str .= "<tr$table[1]>\n";
@@ -3564,6 +3567,7 @@ function pre($str, &$isblock, &$done){
 	$done = 1;
 
 	if(!($isblock&0x2)){
+		$done = 2;
 		$isblock |= 0x2;
 		$str = "<pre class=\"pre\">\n$str";
 	}
