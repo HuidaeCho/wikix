@@ -3863,7 +3863,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 		$PageListFT, $highlightedSearchExtra, $limitlist;
 
 	$extra = $highlightedSearchExtra;
-	
+
 	$query = str_replace("\x02", $limitlist[0], $query);
 	$result = pm_query($db, $query);
 	if(!($n = pm_num_rows($result))){
@@ -3901,7 +3901,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 			break;
 		}
 	}
-	
+
 	if($mode == 2)
 		$str = "<ul class=\"pagelist\">\n";
 	else
@@ -3948,7 +3948,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 "<a class=\"a\" href=\"index.php?display=$iauthor\">$data[author]</a>":$data['author']).
 " ... <small class=\"small\">".($login?"<a class=\"a\" href=\"index.php?$bmtime,bookmark=$pageName\"><span class=\"$bclass\">":"").$mdate.($login?"</span></a>":"")." <a class=\"a\" href=\"index.php?diff=$ipageName\"><span class=\"$bclass\">$mtime</span></a></small>").
 "\n<ul class=\"pagelist_highlighted\">\n";
-		
+
 		$content = page_content($data['id'], "${db_}page.version");
 		$splitted = explode("\x00", preg_replace("/$pattern/",
 					"\x00\\0\x00", $content));
@@ -3957,7 +3957,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 		for($j=0; $j<$nsplitted; $j+=2){
 			$pstart = $pdone + strlen($splitted[$j]);
 			$pdone = $pstart + strlen($splitted[$j+1]);
-			
+
 			$str .= "<li><span class=\"beforequery\">".
 				geni_specialchars0(strright(
 					substr($content, 0, $pstart), $extra)).
@@ -3968,7 +3968,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 					substr($content, $pdone), $extra)).
 				"</li>\n";
 		}
-		
+
 		$str .= "</ul>\n</li>\n";
 	}
 	pm_free_result($result);
