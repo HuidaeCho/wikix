@@ -2092,7 +2092,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$r = "";
-			if(($id = pageid(addslashes($ipagename)))){
+			$iPagename = addslashes($ipagename);
+			if(($id = pageid($iPagename)) &&
+					($admin || !is_hidden($iPagename))){
 				$query = "select page.id, page.name, page.hits,
 					page.ctime, page.locked, page.hidden,
 					data.author, data.ip, data.mtime,
@@ -2231,7 +2233,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$r = "";
-			if(($id = pageid(addslashes($ipagename)))){
+			$iPagename = addslashes($ipagename);
+			if(($id = pageid($iPagename)) &&
+					($admin || !is_hidden($iPagename))){
 				$query = "select page.id, page.name, page.hits,
 					page.ctime, page.locked, page.hidden,
 					data.author, data.ip, data.mtime
@@ -2349,7 +2353,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$r = "";
-			if(($id = pageid(addslashes($ipagename)))){
+			$iPagename = addslashes($ipagename);
+			if(($id = pageid($iPagename)) &&
+					($admin || !is_hidden($iPagename))){
 				$query = "select page.id, page.name, page.hits,
 					page.ctime, page.locked, page.hidden,
 					data.author, data.ip, data.mtime
@@ -2516,7 +2522,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$r = "";
-			if(($id = pageid(addslashes($ipagename)))){
+			$iPagename = addslashes($ipagename);
+			if(($id = pageid($iPagename)) &&
+					($admin || !is_hidden($iPagename))){
 				$query = "select page.id, page.name, page.hits,
 					page.ctime, page.locked, page.hidden,
 					data.author, data.ip, data.mtime
@@ -2636,7 +2644,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$r = "";
-			if(($id = pageid(addslashes($ipagename)))){
+			$iPagename = addslashes($ipagename);
+			if(($id = pageid($iPagename)) &&
+					($admin || !is_hidden($iPagename))){
 				$query = "select page.id, page.name, page.hits,
 					page.ctime, page.locked, page.hidden,
 					data.author, data.ip, data.mtime
@@ -2724,7 +2734,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 			if(preg_match("/^\{(.*)(?<!\\\\)\}/", $m[1][$i], $_m))
 				$ipagename = clean4plugin($_m[1]);
 			$r = "";
-			if(($id = pageid(addslashes($ipagename)))){
+			$iPagename = addslashes($ipagename);
+			if(($id = pageid($iPagename)) &&
+					($admin || !is_hidden($iPagename))){
 				$query = "select page.name from page, link
 					where link.linkfrom=$id
 					and link.linkto=page.id".
