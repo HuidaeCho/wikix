@@ -418,7 +418,8 @@ function include_page($pagename0, $content, $allowed = 0){
 				$result = pm_query($db, $query);
 				$r = pm_fetch_result($result, 0, 0);
 				pm_free_result($result);
-				$r = str_replace("\\", $bs, $r);
+				$r = str_replace("$", "\\$",
+					str_replace("\\", $bs, $r));
 			}
 			$content = preg_replace("\x01^\\\\IncludePage:".preg_quote($m[1][$i])."$\x01m", $r, $content);
 			$content = include_page($pagename0, $content, $allowed);
