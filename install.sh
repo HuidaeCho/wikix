@@ -13,12 +13,6 @@ then
 	exit
 fi
 
-echo "Generating schema files..."
-for i in mysql pg idx_mysql idx_pg
-do
-	sed "s/\${db_}/$1/g" < schema/$i.db_ > schema/$i.sql
-done
-
 echo "Creating the basic structure..."
 if [ ! -d mywikix ]
 then
@@ -45,3 +39,10 @@ do
 	fi
 done
 chmod 1777 file file0 tmpfile
+
+echo "Generating schema files..."
+for i in mysql pg idx_mysql idx_pg
+do
+	echo mywikix/$i.sql
+	sed "s/\${db_}/$1/g" < schema/$i.db_ > mywikix/$i.sql
+done
