@@ -4,7 +4,7 @@ then
 	echo "./ext.sh [http://uri] [-l] [-f] [-d] [-u] ext ..."
 	exit
 fi
-uri=http://wikix.org
+uri=http://wikix.sourceforge.net
 download=0
 uninstall=0
 for i in $@
