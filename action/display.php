@@ -1,19 +1,19 @@
 <?
 if(!$admin && is_site_hidden()){
 	$msgid = "HIDDEN_SITE";
-	include_once("$mytheme/error.php");
+	include_once("$mytheme/exit.php");
 	return;
 }
 
 if(!($id = pageid0($Pagename))){
 	$msgid = "NO_SUCH_PAGE";
-	include_once("$mytheme/error.php");
+	include_once("$mytheme/exit.php");
 	return;
 }
 
 if(!$admin && is_hidden($Pagename)){
 	$msgid = "HIDDEN_PAGE";
-	include_once("$mytheme/error.php");
+	include_once("$mytheme/exit.php");
 	return;
 }
 
@@ -32,8 +32,8 @@ if(($r = pm_num_rows($result)))
 	$data = pm_fetch_array($result, 0);
 pm_free_result($result);
 if(!$r){
-	$error = 'no_version';
-	include_once("$mytheme/error.php");
+	$msgid = "NO_SUCH_VERSION";
+	include_once("$mytheme/exit.php");
 	return;
 }
 
