@@ -1810,7 +1810,8 @@ function listing($str, &$ipair, &$pair, &$done, $closeall = 1){
 function plugin($str, $DisplayPool, &$displaypool){
 	global	$db, $db_, $backendDB, $wikiXdir, $wikiXFrontpage, $action,
 		$mytheme, $today, $admin, $adminAuthor, $author, $btime,
-		$pagename0, $wikiXheader, $wikiXfooter, $LinkPool, $limitlist;
+		$pagename0, $wikiXheader, $wikiXfooter, $LinkPool, $PageListFT,
+		$limitlist;
 
 	if(strpos($str, "\\") === false)
 		return $str;
@@ -1846,6 +1847,11 @@ function plugin($str, $DisplayPool, &$displaypool){
 			}
 			$str = preg_replace("\x01\\\\IncludeFile\{".preg_quote($m[1][$i])."\}\x01", $r, $str);
 		}
+		if(strpos($str, "\\") === false)
+			return $str;
+	}
+	if(preg_match("'^\\\\PageListFT:([01])$'", $str, $m)){
+		$PageListFT = $m[1];
 		if(strpos($str, "\\") === false)
 			return $str;
 	}
@@ -3642,7 +3648,7 @@ function pre($str, &$isblock, &$done){
 
 function pagelist($query, $start, $ninfos, $order, $color = 0){
 	global	$db, $db_, $admin, $author, $login, $btime, $now, $pageName,
-		$limitlist;
+		$PageListFT, $limitlist;
 
 	$query = str_replace("\x02", $limitlist[0], $query);
 	$result = pm_query($db, $query);
@@ -3736,8 +3742,7 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 ($login?"<a class=\"a\" href=\"index.php?".strtotime($now).",bookmark=$pageName\">":"")."<span class=\"table_header\">Last Modifie".
 ($login?"</span></a><a class=\"a\" href=\"index.php?bookmark=$pageName\"><span class=\"table_header\">":"")."d</span>".($login?"</a>":"")."&nbsp;</td>".
 "<td align=\"right\">&nbsp;<span class=\"table_header\">H</span>&nbsp;</td>".
-"<td align=\"right\">&nbsp;<span class=\"table_header\">F</span>&nbsp;</td>".
-"<td align=\"right\">&nbsp;<span class=\"table_header\">T</span>&nbsp;</td>".
+($PageListFT?"<td align=\"right\">&nbsp;<span class=\"table_header\">F</span>&nbsp;</td><td align=\"right\">&nbsp;<span class=\"table_header\">T</span>&nbsp;</td>":"").
 "<td>&nbsp;<span class=\"table_header\">L".($admin?"<span class=\"emphasized\">H</span>":"")."</span>&nbsp;</td>".
 "</tr>\n");
 		}
@@ -3780,21 +3785,6 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 			$w[1] = "";
 		}
 
-		if(!$mode){
-			$query = "select count(linkfrom) from ${db_}link
-						where linkfrom=$data[id]";
-			$result0 = pm_query($db, $query);
-			$linkfrom = pm_fetch_result($result0, 0, 0);
-			pm_free_result($result0);
-			$iPagename = addslashes($data['name']);
-			$query = "select count(linkto) from ${db_}link
-						where linkto=$data[id]
-						or linktoname='$iPagename'";
-			$result0 = pm_query($db, $query);
-			$linkto = pm_fetch_result($result0, 0, 0);
-			pm_free_result($result0);
-		}
-
 		if($list > 1){
 			$str .=
 "<a class=\"wikiword_$action\" href=\"index.php?$action=$ipageName\"".
@@ -3815,6 +3805,21 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 " ... <small class=\"small\">".($login?"<a class=\"a\" href=\"index.php?$bmtime,bookmark=$pageName\"><span class=\"$bclass\">":"").$mdate.($login?"</span></a>":"")." <a class=\"a\" href=\"index.php?diff=$ipageName\"><span class=\"$bclass\">$mtime</span></a></small>").
 "</li>\n";
 		}else{
+			if($PageListFT && !$mode){
+				$query = "select count(linkfrom) from ${db_}link
+						where linkfrom=$data[id]";
+				$result0 = pm_query($db, $query);
+				$linkfrom = pm_fetch_result($result0, 0, 0);
+				pm_free_result($result0);
+				$iPagename = addslashes($data['name']);
+				$query = "select count(linkto) from ${db_}link
+						where linkto=$data[id]
+						or linktoname='$iPagename'";
+				$result0 = pm_query($db, $query);
+				$linkto = pm_fetch_result($result0, 0, 0);
+				pm_free_result($result0);
+			}
+
 			$str .=
 ($mode?
 "$tag2 class=\"pagelist_$class\">&nbsp;<a class=\"wikiword_$action\" href=\"index.php?$action=$ipageName\" title=\"$data[author] ... $data[mtime]\">$w[0]</a>$w[1] <i>(<a class=\"a\" href=\"index.php?diff=$ipageName\"><span class=\"$bclass\">diff</span></a>)</i>&nbsp;$tag3\n":
@@ -3827,8 +3832,7 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 ($admin?"<td>&nbsp;$data[ip]&nbsp;</td>":"").
 "<td>&nbsp;".($login?"<a class=\"a\" href=\"index.php?$bmtime,bookmark=$pageName\"><span class=\"$bclass\">":"").$mdate.($login?"</span></a>":"")." <a class=\"a\" href=\"index.php?diff=$ipageName\"><span class=\"$bclass\">$mtime</span></a>&nbsp;</td>".
 "<td align=\"right\">&nbsp;<a class=\"a\" href=\"index.php?info=$ipageName\">$data[hits]</a>&nbsp;</td>".
-"<td align=\"right\">&nbsp;<a class=\"a\" href=\"index.php?links1=$ipageName\">$linkfrom</a>&nbsp;</td>".
-"<td align=\"right\">&nbsp;<a class=\"a\" href=\"index.php?links2=$ipageName\">$linkto</a>&nbsp;</td>".
+($PageListFT?"<td align=\"right\">&nbsp;<a class=\"a\" href=\"index.php?links1=$ipageName\">$linkfrom</a>&nbsp;</td><td align=\"right\">&nbsp;<a class=\"a\" href=\"index.php?links2=$ipageName\">$linkto</a>&nbsp;</td>":"").
 "<td>&nbsp;".($data['locked']?"L":"").($data['hidden']?"<span class=\"emphasized\">H</span>":"")."&nbsp;</td>".
 "</tr>\n");
 		}
