@@ -32,6 +32,9 @@ for($i=0; $i<$n; $i++){
 			$query = "update ${db_}page set name='$tname'
 						where id=$id";
 			$result0 = pm_query($db, $query);
+			$query = "update ${db_}file set page='$tname'
+						where page='$name'";
+			$result0 = pm_query($db, $query);
 			if($Pagename == $name){
 				$pagename0 = $data['tname'];
 				$pagename = geni_specialchars($pagename0);
