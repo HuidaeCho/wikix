@@ -3948,7 +3948,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 "\n<ul class=\"pagelist_highlighted\">\n";
 
 		$content = page_content($data['id'], "${db_}page.version");
-		$splitted = explode("\x01", preg_replace("/$pattern/",
+		$splitted = explode("\x01", preg_replace($pattern,
 						"\x01\\0\x01", $content));
 		$nsplitted = count($splitted) - 1;
 		$pstart = $pdone = 0;

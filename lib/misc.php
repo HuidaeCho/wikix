@@ -809,6 +809,8 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
 					$ibegin'%\\1%'$iend":"").
 				(($tc&0x3)==0x3?")":""), $where);
 	}
+	if($highlight != "")
+		$highlight = "\x01$highlight\x01".($ibegin==""?"":"i");
 
 	$query = "select ${db_}page.id, ${db_}page.name, ${db_}page.hits,
 			${db_}page.ctime, ${db_}page.locked, ${db_}page.hidden,
