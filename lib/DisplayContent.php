@@ -895,8 +895,8 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		if($cont)
 			continue;
 		}
-		if(!$domultilinelisting && strpos("*#;", $iline[0]) === false &&
-				$iclose > 0 && $close[0] == 3){
+		if(!$domultilinelisting && $iclose > 0 && $close[0] == 3 &&
+				strpos("*#;", $iline[0]) === false){
 			if($mode){
 				$str = "";
 				for(; --$iclose>=0; ){
