@@ -57,6 +57,7 @@ $uniqLogin = 0;
 $pageLock = 0;
 $pageHide = 0;
 $caseinsensitiveSearch = 0;
+$highlightedSearch = 1;
 $expireTime = 1209600; # 14 * 86400;
 ################################################################################
 

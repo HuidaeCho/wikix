@@ -595,8 +595,10 @@ function gnuplot($file, $str, $opt){
 	return "";
 }
 
-function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex, &$highlight){
-	global	$backendDB, $db_, $admin, $caseinsensitiveSearch;
+function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex,
+		&$highlight){
+	global	$backendDB, $db_, $admin, $caseinsensitiveSearch,
+		$highlightedSearch;
 
 	if($caseinsensitiveSearch){
 		$ibegin = "lower(";
@@ -605,13 +607,14 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex, &$high
 		$ibegin = "";
 		$iend = "";
 	}
+	$use_highlight = $highlightedSearch;
+
 	$tc = 0x0;
 	$order = " order by ${db_}page.name asc";
 	$regex = 0;
 	$iregex = "";
 	$range = 0;
 	$highlight = "";
-	$use_highlight = 0;
 	if(preg_match("'(.*)/([-tcirh~RMP@]*)$'", $search, $m)){
 		$search = $m[1];
 		$l = strlen($m[2]);
@@ -637,7 +640,10 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex, &$high
 				$range = 0;
 				break;
 			case "h":
-				$use_highlight = 1;
+				if($highlightedSearch)
+					$use_highlight = 0;
+				else
+					$use_highlight = 1;
 				break;
 			case "~":
 				$regex = 0;
@@ -738,11 +744,11 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex, &$high
 				($from==""?"":")");
 	}else{
 		if($use_highlight){
-			$querys = explode("\x03", $_where);
-			$nquerys = count($querys);
-			for($i=1;$i<$nquerys;$i+=2)
+			$queries = explode("\x03", $_where);
+			$nqueries = count($queries);
+			for($i=1;$i<$nqueries;$i+=2)
 				$highlight .= ($highlight==""?"":"|").
-					preg_quote($querys[$i]);
+					preg_quote($queries[$i]);
 		}
 		$where = str_replace("%", "\\%", $where);
 		$where = str_replace("_", "\\_", $where);
