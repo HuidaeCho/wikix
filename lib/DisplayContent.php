@@ -2832,6 +2832,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 				and ${db_}page.version=${db_}data.version ".
 				($admin?"":"and ${db_}page.hidden=0 ").
 				"and ${db_}page.name!='$wikiXFrontpage'
+				and ${db_}data.content!='\x01'
 				\x02order by ${db_}page.name";
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
@@ -3012,6 +3013,48 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$str = preg_replace("\x01\\\\WantedPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", str_replace("\\", "\x03", $r), $str);
 		}
 		pm_free_result($result);
+		if(strpos($str, "\\") === false)
+			return $str;
+	}
+	if(($n = preg_match_all("/\\\\DeletedPages([@*]?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
+		$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime, 1 as deleted
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}data.content='\x01' \x02";
+		if($n > 1){
+			$m[1] = array_values(array_unique($m[1]));
+			$n = count($m[1]);
+		}
+
+		for($i=0; $i<$n; $i++){
+			$porder = 0;
+			$start = 0;
+			$ninfos = $m[1][$i];
+			if($ninfos != ""){
+				switch($ninfos[0]){
+				case "@":
+					$porder = 2;
+					$ninfos = substr($ninfos, 1);
+					break;
+				case "*":
+					$porder = 1;
+					$ninfos = substr($ninfos, 1);
+					break;
+				}
+			}
+			if(preg_match("/^([0-9]*)-([0-9]*)$/", $ninfos, $_m)){
+				$start = $_m[1];
+				$ninfos = $_m[2];
+			}
+			$r = pagelist($query, $start, $ninfos, $porder);
+			$str = preg_replace("\x01\\\\DeletedPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
+		}
 		if(strpos($str, "\\") === false)
 			return $str;
 	}
