@@ -1,7 +1,10 @@
-<?if($wikiXonlybody)return;?>
+<?if($wikiXonlybody)
+	return;
+if($action == "display"){?>
 <div align="right">
 <a href="index.php?edit=<?=$pageName?>">EditOrViewSource</a>
 </div>
+<?}?>
 <style type="text/css">
 .mymenu
 {
