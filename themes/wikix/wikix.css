@@ -448,6 +448,18 @@ td.diff_deleted
 {
 	background-color:	pink;
 }
+td.diff_modified
+{
+	background-color:	lightgrey;
+}
+span.diff_modified_added
+{
+	background-color:	#66cccc;
+}
+span.diff_modified_deleted
+{
+	background-color:	pink;
+}
 /*******************************************************************************
  font
 *******************************************************************************/
