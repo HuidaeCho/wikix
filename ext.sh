@@ -1,10 +1,16 @@
 #!/bin/sh
+uri=http://wikix.sourceforge.net
 if [ $# -eq 0 ]
 then
-	echo "./ext.sh [http://uri] [-l] [-f] [-d] [-u] ext ..."
+	echo "Usage: ./ext.sh [http://uri] [OPTION] ext ..."
+	echo ""
+	echo "	http://uri	extension server (default: $uri)"
+	echo "	-l		get the full list of extensions"
+	echo "	-a		install all extensions"
+	echo "	-d		download and install extensions"
+	echo "	-u		uninstall extensions"
 	exit
 fi
-uri=http://wikix.sourceforge.net
 download=0
 uninstall=0
 for i in $@
@@ -13,7 +19,7 @@ do
 	http://*)
 		uri=$i
 		;;
-	-l|-f)
+	-l|-a)
 		j=`echo $uri | sed 's/^http:\\/\\//ext./; s/\\//_/g; s/$/.ls/'`
 		lynx -useragent="wikiX/ext.sh - Lynx" -source $uri/ext.ls > $j
 		head -1 $j | grep '^<' > /dev/null
@@ -24,7 +30,7 @@ do
 			exit
 		fi
 		echo $j created
-		if [ $i = "-f" ]
+		if [ $i = "-a" ]
 		then
 			./ext.sh -d `cat $j`
 		fi

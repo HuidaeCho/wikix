@@ -3,7 +3,7 @@ if [ $# -eq 0 ]
 then
 	echo "Usage: ./install.sh db_"
 	echo ""
-	echo "	db_: DB table prefix ('' for no prefix)"
+	echo "	db_	DB table prefix ('' for no prefix)"
 	exit
 fi
 db_=`echo "$1" | sed 's/[0-9a-zA-Z_]//g'`
