@@ -869,7 +869,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			}else
 			if(preg_match("/^\\\\dcReset:(.+)$/", $iline, $m)){
 				if(isset($dircmd[$m[1]]))
-					$dircmd[$m[1]] = array();
+					unset($dircmd[$m[1]]);
 				$cont = 1;
 			}
 			break;

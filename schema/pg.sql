@@ -9,7 +9,7 @@ drop table taggedlink;
 create table admindb(
 	id varchar(100) primary key,
 	pw varchar(32),
-	sid varchar(100),
+	sid varchar(32),
 	btime varchar(25),
 	cip varchar(20),
 	ctime varchar(25),
@@ -20,7 +20,7 @@ create table admindb(
 create table userdb(
 	id varchar(100) primary key,
 	pw varchar(32),
-	sid varchar(100),
+	sid varchar(32),
 	btime varchar(25),
 	cip varchar(20),
 	ctime varchar(25),

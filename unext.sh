@@ -1,5 +1,5 @@
 #!/bin/sh
-for i in mylib mythemelib mystage myplugin mysubs myphp mymisc themes
+for i in mywikix mylib mythemelib mystage myplugin mysubs myphp mymisc themes
 do
 	cd $i
 	for j in *
@@ -8,7 +8,7 @@ do
 		then
 			continue
 		fi
-		echo $i/$j...
+		echo Unpackaging $i/$j...
 		unzip -o $j.zip
 	done
 	cd ..

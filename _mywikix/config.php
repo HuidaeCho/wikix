@@ -15,9 +15,10 @@ $wikiXdir = "";
 # whitespaces. Login system does not allow such an id.
 $adminAuthor = "wikiX";
 $adminPassword = "[w!k!X|p@ssw*rd]"; # changeable
-################################################################################
 
 $charSet = ""; # iso-8859-1 for English, euc-kr for Korean
+################################################################################
+
 #$mytheme = "themes/wikix";
 $mytheme = "mytheme";
 
