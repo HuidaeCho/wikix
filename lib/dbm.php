@@ -421,7 +421,7 @@ function include_page($pagename0, $content, $allowed = 0){
 				$r = str_replace("$", "\\$",
 					str_replace("\\", $bs, $r));
 			}
-			$content = preg_replace("\x01^\\\\IncludePage:".preg_quote($m[1][$i])."$\x01m", $r, $content);
+			$content = preg_replace("\x01^\\\\IncludePage:".preg_quote($m[1][$i])."(?=[\r\n]|$)\x01m", $r, $content);
 			$content = include_page($pagename0, $content, $allowed);
 		}
 	}
