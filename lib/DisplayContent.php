@@ -3954,7 +3954,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 					"\x00\\0\x00", $content));
 		$nsplitted = count($splitted) - 1;
 		$pstart = $pdone = 0;
-		for($j=0;$j<$nsplitted;$j+=2){
+		for($j=0; $j<$nsplitted; $j+=2){
 			$pstart = $pdone + strlen($splitted[$j]);
 			$pdone = $pstart + strlen($splitted[$j+1]);
 			
