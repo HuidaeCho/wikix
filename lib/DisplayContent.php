@@ -911,6 +911,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$c = str_replace("\r", "\n", $m[2][$j]);
 				$c = str_replace("&lt;", "<", $c);
 				$c = str_replace("&gt;", ">", $c);
+				$c = str_replace("&amp;", "&", $c);
 				ob_start();
 				DisplayContent($c, 1, 1);
 				$r = ob_get_contents();
