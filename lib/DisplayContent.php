@@ -39,9 +39,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 
 	$content = mystage0($content, $mode);
 
+	$content = str_replace("\\\\", "\x03", $content);
 	$pattern = array(
-		"/^(.*\n)?\\\\begin\n/s",
-		"/\n\\\\end(\n.*)?$/s",
+		"/^(?:.*\n)?\\\\begin\n/s",
+		"/\n\\\\end(?:\n.*)?$/s",
 		"/\\\\beginhide(?![a-zA-Z])[ \t]?(.*?)\\\\endhide(?![a-zA-Z])/s",
 		"/^\\\\basis\n(.*?)\n\\\\easis$/mse",
 		"/^\\\\bnobs\n(.*?)\n\\\\enobs$/mse",
@@ -66,8 +67,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"\\1",
 	);
 	$content = preg_replace($pattern, $replace, $content);
-
-	$content = str_replace("\\\\", "\x03", $content);
 
 	$content = preg_replace("/\\\\myphp\{(.*?)(?<!\\\\)\}/e",
 		"php(str_replace('\x03', '$bs$bs', stripslashes('\\1')))",
