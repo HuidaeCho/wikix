@@ -130,7 +130,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"'\\\\begintex(@?\*?)([0-9]*)\{(.*?)(?<!\\\\)\}(.*?)\\\\endtex(?![a-zA-Z])'se",
 		"'\\\\beginlatex(@?\*?)([0-9]*)\{(.*?)(?<!\\\\)\}(.*?)\\\\endlatex(?![a-zA-Z])'se",
 		"'\\\\begingnuplot(\*?)\{(.*?)(?<!\\\\)\}(.*?)\\\\endgnuplot(?![a-zA-Z])'se",
-		"'(\\\\bgroup([0-9]*)\n.*?\n\\\\egroup\\2)(?![0-9a-zA-Z])'se",
 		"'\\\\sign(?:[ \t]+(.+))?[ \t]*$'me",
 		"'\\\\n(?![a-zA-Z])'",
 		"'\\\\p(?![a-zA-Z])'",
@@ -151,8 +150,8 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"'\\\\endpostit(?![a-zA-Z])'",
 		"'\\\\`'",
 		"'\\\\[+^]'",
-		"'(?<=^|[ \t]|\\\\\.)([^ \t\r\n]+?)\\\\\.'m",
-		"'(?<=[^\r\n])\\\\[,.]|\\\\[,.](?=[^\r\n])'",
+		"'(?<=^|[ \t]|\\\\\.)([^ \t\n]+?)\\\\\.'m",
+		"'(?<=[^\n])\\\\[,.]|\\\\[,.](?=[^\n])'",
 		"'$wikiXword'",
 		"'(\\\\mafi\{.*?(?<!\\\\)\})'e",
 		"'(\\\\IncludeFile\{.*?(?<!\\\\)\})'e",
@@ -210,7 +209,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"tex(\\2+0, '\\3', '\\4', '\\1')",
 		"latex(\\2+0, '\\3', '\\4', '\\1')",
 		"gnuplot('\\2', '\\3', '\\1')",
-		"str_replace('\n', '\r\r', str_replace('$bs\"', '\"', '\\1'))",
 		"'${bs}right -- ['.('\\1'==''?'$author':'\\1').'] ${bs}smallnow'",
 		"<br class=\"br\" />",
 #		"<p class=\"p\"></p>",
@@ -275,6 +273,11 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 	$content = str_replace("\\~\n", "", $content);
 	$content = str_replace("\n\\~", "", $content);
 	$content = str_replace("\\~", "", $content);
+
+	$content = preg_replace(
+		"'(\\\\bgroup([0-9]*)\n.*?\n\\\\egroup\\2)(?![0-9a-zA-Z])'se",
+		"str_replace('\n', '\r\r', str_replace('$bs\"', '\"', '\\1'))",
+		$content);
 
 	$content = geni_trim($content);
 
