@@ -1,5 +1,5 @@
 <?
-$wikiXversion = "v1.1.7c";
+$wikiXversion = "v1.1.7d";
 
 $wikiXlogo = "<b>wikiX $wikiXversion</b>";
 $wikiXpages = "wikiXpages";
