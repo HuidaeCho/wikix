@@ -212,6 +212,9 @@ case "display":
 	break;
 }
 
+$wikiXheader = include_page($pagename0, $wikiXheader);
+$wikiXfooter = include_page($pagename0, $wikiXfooter);
+
 $EditRedirectedPage = "";
 $npages = npages();
 $btime = btime();
