@@ -305,7 +305,10 @@ ol.pagelist
 ol.pagelist li
 {
 }
-ul.pagelist_highilghted li
+ul.pagelist_highlighted
+{
+}
+ul.pagelist_highlighted li
 {
 }
 ul.pagelist_highlighted li span.beforequery
