@@ -2822,7 +2822,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 				${db_}data.author, ${db_}data.ip,
 				${db_}data.mtime from ${db_}page, ${db_}data ".
 				($backendDB=="mysql"?
-				"left join link on ${db_}page.id=${db_}link.linkto
+				"left join ${db_}link on ${db_}page.id=${db_}link.linkto
 				and ${db_}link.linkfrom!=${db_}link.linkto
 				where ${db_}link.linkto is NULL ":
 				"where ${db_}page.id not in
