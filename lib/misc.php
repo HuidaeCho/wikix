@@ -510,7 +510,7 @@ function tex($res, $file, $str, $opt, $tex = "tex"){
 	$path[($alias?'gs_alias':'gs')].
 		" -r${res}x$res -sDEVICE=ppmraw -sOutputFile=- -sNOPAUSE -q - |
 	$path[pnmcrop] |
-	$path[pnmtopng] ".($trans?"-transparent '#ffffff' ":"")."> ../$file;
+	$path[pnmtopng] ".($trans?"-transparent '#ffffff' ":"")."> '../$file';
 	$path[rm] -f $fname $fname.*;
 	");
 
@@ -556,7 +556,7 @@ function gnuplot($file, $str, $opt){
 		exec("
 		cd tmpfile;
 		echo \"$str\" | $path[gnuplot];
-		$path[pnmtopng] -transparent '#ffffff' $fname.pbm > ../$file;
+		$path[pnmtopng] -transparent '#ffffff' $fname.pbm > '../$file';
 		$path[rm] -f $fname $fname.*;
 		");
 	}else{
