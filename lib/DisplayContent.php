@@ -352,7 +352,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dotable = 1;
 		$dopre = 1;
 		$dolisting = 1;
-		$domultilinelisting = 0;
+		$domultilinelisting = 1;
 		$doheading = 1;
 		$dolinebreak = 1;
 		$dofont = 1;
@@ -523,7 +523,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$dotable = 0;
 			$dopre = 0;
 			$dolisting = 0;
-			$domultilinelisting = 1;
+			$domultilinelisting = 0;
 			$doheading = 0;
 			$dolinebreak = 0;
 			$dofont = 0;
@@ -547,7 +547,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$dotable = 1;
 			$dopre = 1;
 			$dolisting = 1;
-			$domultilinelisting = 0;
+			$domultilinelisting = 1;
 			$doheading = 1;
 			$dolinebreak = 1;
 			$dofont = 1;
