@@ -10,13 +10,13 @@ if(!is_site_locked()){
 	return;
 }
 
-$query = "update page set tag=version";
+$query = "update ${db_}page set tag=version";
 $result = pm_query($db, $query);
 
-$query = "delete from taggedlink";
+$query = "delete from ${db_}taggedlink";
 $result = pm_query($db, $query);
 
-$query = "insert into taggedlink (linkfrom, linkto, linktoname)
-	select linkfrom, linkto, linktoname from link";
+$query = "insert into ${db_}taggedlink (linkfrom, linkto, linktoname)
+	select linkfrom, linkto, linktoname from ${db_}link";
 $result = pm_query($db, $query);
 ?>

@@ -4,11 +4,12 @@
 <?
 if($pagename0 === $wikiXfrontpage0){
 	if($admin)
-		$query = "select sum(length(content)) from data";
+		$query = "select sum(length(content)) from ${db_}data";
 	else
-		$query = "select sum(length(data.content)) from page, data
-					where page.id=data.id and
-					page.hidden=0 and page.locked=0";
+		$query = "select sum(length(${db_}data.content))
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id and
+				${db_}page.hidden=0 and ${db_}page.locked=0";
 	$result0 = pm_query($db, $query);
 	$size = pm_fetch_result($result0, 0, 0);
 	pm_free_result($result0);
@@ -18,7 +19,7 @@ if($pagename0 === $wikiXfrontpage0){
 }
 
 if($admin||!$page['locked']){
-	$query = "select sum(length(content)) from data where id=$id";
+	$query = "select sum(length(content)) from ${db_}data where id=$id";
 	$result0 = pm_query($db, $query);
 	$size = pm_fetch_result($result0, 0, 0);
 	pm_free_result($result0);

@@ -30,7 +30,7 @@ $admin = 0;
 $author = $ip;
 if($wikiXauthor != "" &&
 	preg_match("/^(login|admin):(.+):(.+)$/", $wikiXauthor, $m)){
-	$query = "select sid from ".($m[1]=="admin"?"admindb":"userdb").
+	$query = "select sid from ${db_}".($m[1]=="admin"?"admindb":"userdb").
 				" where id='$m[2]'";
 	$result = pm_query($db, $query);
 	$sid = pm_fetch_result($result, 0, 0);
@@ -61,9 +61,9 @@ if(isset($post['author']) && isset($post['password']) &&
 	if($post['password'] != ""){
 		$author = $post['author'];
 		$Password = md5($post['password']);
-		$query = "update admindb set pw='$Password' where id='$author'";
+		$query = "update ${db_}admindb set pw='$Password' where id='$author'";
 		$result = pm_query($db, $query);
-		$query = "update userdb set pw='$Password' where id='$author'";
+		$query = "update ${db_}userdb set pw='$Password' where id='$author'";
 		$result = pm_query($db, $query);
 	}
 	$admin = 0;

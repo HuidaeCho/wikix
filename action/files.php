@@ -13,7 +13,7 @@ if(!$admin){
 }
 if($pagename == ""){
 	if(!$admin && $v0 != ""){
-		$query = "select page from file where id=$v0";
+		$query = "select page from ${db_}file where id=$v0";
 		$result = pm_query($db, $query);
 		if(pm_num_rows($result)){
 			if(is_locked(
@@ -43,7 +43,7 @@ if($v0 != ""){
 		return;
 	}
 
-	$query = "select file, page, author from file where id=$v0".
+	$query = "select file, page, author from ${db_}file where id=$v0".
 				($pagename==""?"":" and page='$Pagename'");
 	$result = pm_query($db, $query);
 	if(pm_num_rows($result)){
@@ -55,7 +55,7 @@ if($v0 != ""){
 					preg_replace("/^file/", "", $old);
 				mkdirp("$wikiXdir/".dirname($new));
 				if(rename("$wikiXdir/$old", "$wikiXdir/$new")){
-					$query = "delete from file
+					$query = "delete from ${db_}file
 								where id=$v0";
 					$result0 = pm_query($db, $query);
 
@@ -71,7 +71,7 @@ if($v0 != ""){
 						$d = dirname($d);
 				}
 			}else{
-				$query = "delete from file where id=$v0";
+				$query = "delete from ${db_}file where id=$v0";
 				$result0 = pm_query($db, $query);
 
 				$d = dirname($old);
@@ -85,7 +85,7 @@ if($v0 != ""){
 	pm_free_result($result);
 }
 
-$query = "select count(id) from file".
+$query = "select count(id) from ${db_}file".
 				($pagename==""?"":" where page='$Pagename'");
 $result = pm_query($db, $query);
 $n = pm_fetch_result($result, 0, 0);

@@ -6,6 +6,6 @@ if(invalid_access()){
 if(!$admin || is_hidden($Pagename))
 	return;
 
-$query = "update page set hidden=1 where name='$Pagename'";
+$query = "update ${db_}page set hidden=1 where name='$Pagename'";
 $result = pm_query($db, $query);
 ?>

@@ -22,10 +22,10 @@ if(($id = pageid($Pagename))){
 	$w[1] = geni_specialchars($w[1]);
 }
 
-$query = "select page.name from link, page
-			where $where and link.linkfrom=page.id ".
-			($admin?"":"and page.hidden=0 ").
-			"order by page.name";
+$query = "select ${db_}page.name from ${db_}link, ${db_}page
+			where $where and ${db_}link.linkfrom=${db_}page.id ".
+			($admin?"":"and ${db_}page.hidden=0 ").
+			"order by ${db_}page.name";
 $result = pm_query($db, $query);
 $nlinks = pm_num_rows($result);
 

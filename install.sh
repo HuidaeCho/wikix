@@ -1,4 +1,25 @@
 #!/bin/sh
+if [ $# -eq 0 ]
+then
+	echo "Usage: ./install.sh db_"
+	echo ""
+	echo "	db_: DB table prefix ('' for no prefix)"
+	exit
+fi
+db_=`echo "$1" | sed 's/[0-9a-zA-Z_]//g'`
+if [ "x$db_" != "x" ]
+then
+	echo "db_ should contain only 0-9, a-z, A-Z, and _ characters."
+	exit
+fi
+
+echo "Generating schema files..."
+for i in mysql pg idx_mysql idx_pg
+do
+	sed "s/\${db_}/$1/g" < schema/$i.db_ > schema/$i.sql
+done
+
+echo "Creating the basic structure..."
 if [ ! -d mywikix ]
 then
 	echo mywikix

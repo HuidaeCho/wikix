@@ -1569,7 +1569,8 @@ function netlink($str){
 }
 
 function interwiki($str){
-	global	$interWikiMap, $Interwikimap0, $InterWikimap, $netLink, $imgExt;
+	global	$db_, $interWikiMap, $Interwikimap0, $InterWikimap, $netLink,
+		$imgExt;
 	static	$once = 1, $interWiki;
 
 	if(strpos($str, ":") === false)
@@ -1578,7 +1579,7 @@ function interwiki($str){
 		$data = "";
 		$interWiki['@count'] = 0;
 		if($InterWikimap != "" && ($id = pageid($InterWikimap))){
-			$data .= page_content($id, "page.version")."\n";
+			$data .= page_content($id, "${db_}page.version")."\n";
 			$data = include_page($Interwikimap0, $data);
 		}
 		if(file_exists($interWikiMap)){
@@ -1807,7 +1808,7 @@ function listing($str, &$ipair, &$pair, &$done, $closeall = 1){
 }
 
 function plugin($str, $DisplayPool, &$displaypool){
-	global	$db, $backendDB, $wikiXdir, $wikiXFrontpage, $action,
+	global	$db, $db_, $backendDB, $wikiXdir, $wikiXFrontpage, $action,
 		$mytheme, $today, $admin, $adminAuthor, $author, $btime,
 		$pagename0, $wikiXheader, $wikiXfooter, $LinkPool, $limitlist;
 
@@ -1852,16 +1853,16 @@ function plugin($str, $DisplayPool, &$displaypool){
 		$limitlist[0] = "";
 		$limitlist[1] = "";
 		if($m[1] == "L")
-			$limitlist[0] .= "and page.locked=1 ";
+			$limitlist[0] .= "and ${db_}page.locked=1 ";
 		else
 		if($m[1] == "!L")
-			$limitlist[0] .= "and page.locked=0 ";
+			$limitlist[0] .= "and ${db_}page.locked=0 ";
 		if($admin){
 			if($m[2] == "H")
-				$limitlist[0] .= "and page.hidden=1 ";
+				$limitlist[0] .= "and ${db_}page.hidden=1 ";
 			else
 			if($m[2] == "!H")
-				$limitlist[0] .= "and page.hidden=0 ";
+				$limitlist[0] .= "and ${db_}page.hidden=0 ";
 		}
 		$op = " and ";
 		$_m = array();
@@ -1874,7 +1875,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 		}
 		if(count($_m)){
 			$_m2 = "(".implode($op, $_m).") ";
-			$limitlist[0] .= "and ".str_replace("\x02", ($m[7]==""?"data.mtime":"page.ctime"), $_m2);
+			$limitlist[0] .= "and ".str_replace("\x02", ${db_}.($m[7]==""?"data.mtime":"page.ctime"), $_m2);
 			$limitlist[1] = "where ".str_replace("\x02", ($m[7]==""?"mtime":"ctime"), $_m2);
 		}
 		return "";
@@ -1903,7 +1904,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$query = search_query($search, $tc,
 						$ibegin, $iend, $order, $regex);
 			$porder = ($order==""?1:$porder);
-			$color = (strpos($order, " order by data.mtime ")===false?0:1);
+			$color = (strpos($order, " order by ${db_}data.mtime ")===false?0:1);
 			$r = pagelist($query, $start, $ninfos, $porder, $color);
 			$str = preg_replace("\x01\\\\SearchPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
@@ -1942,16 +1943,20 @@ function plugin($str, $DisplayPool, &$displaypool){
 		if(strpos($str, "\\") === false)
 			return $str;
 	}
+
 	if(($n = preg_match_all("/\\\\RecentChanges(@?\*?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$Query = "select page.id, page.name, page.hits, page.ctime,
-				page.locked, page.hidden,
-				data.author, data.ip, data.mtime,
-				data.content='\x01' as deleted
-				from page, data
-				where page.id=data.id
-				and page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"\x02order by data.mtime desc, page.name";
+		$Query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime,
+				${db_}data.content='\x01' as deleted
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"\x02order by ${db_}data.mtime desc,
+				${db_}page.name";
 
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
@@ -1981,13 +1986,13 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$from = date("Y-m-d", $from);
 				$ninfos = preg_replace("/^(0*)(?:[1-9][0-9]*)?$/", "\\1", $ninfos);
 				$query = str_replace("\x02",
-						"and data.mtime>='$from' \x02",
-						$query);
+					"and ${db_}data.mtime>='$from' \x02",
+					$query);
 				if($start){
 					$to = strtotime($today)-($start-1)*24*60*60;
 					$to = date("Y-m-d", $to);
 					$query = str_replace("\x02",
-						"and data.mtime<'$to' \x02",
+						"and ${db_}data.mtime<'$to' \x02",
 						$query);
 					$start = 0;
 				}
@@ -2029,30 +2034,33 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			$iPagename = addslashes($ipagename);
 			$id = pageid($iPagename);
-			$query = "select page.id, page.name, page.hits,
-				page.ctime, page.locked, page.hidden,
-				data.author, data.ip, data.mtime,
-				data.content='\x01' as deleted
-				from page, data, link
-				where page.id=data.id
-				and page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"and link.linkfrom=page.id
-				and ".($id?"link.linkto=$id ":
-				"link.linktoname='$iPagename' ").
-				"\x02order by data.mtime desc, page.name";
+			$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime,
+				${db_}data.content='\x01' as deleted
+				from ${db_}page, ${db_}data, ${db_}link
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}link.linkfrom=${db_}page.id
+				and ".($id?"${db_}link.linkto=$id ":
+				"${db_}link.linktoname='$iPagename' ").
+				"\x02order by ${db_}data.mtime desc,
+				${db_}page.name";
 			if($ndays){
 				$from = strtotime($today)-$ninfos*24*60*60;
 				$from = date("Y-m-d", $from);
 				$ninfos = preg_replace("/^(0*)(?:[1-9][0-9]*)?$/", "\\1", $ninfos);
 				$query = str_replace("\x02",
-						"and data.mtime>='$from' \x02",
-						$query);
+					"and ${db_}data.mtime>='$from' \x02",
+					$query);
 				if($start){
 					$to = strtotime($today)-($start-1)*24*60*60;
 					$to = date("Y-m-d", $to);
 					$query = str_replace("\x02",
-						"and data.mtime<'$to' \x02",
+						"and ${db_}data.mtime<'$to' \x02",
 						$query);
 					$start = 0;
 				}
@@ -2095,17 +2103,20 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$iPagename = addslashes($ipagename);
 			if(($id = pageid($iPagename)) &&
 					($admin || !is_hidden($iPagename))){
-				$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime,
-					data.content='\x01' as deleted
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=$id
-					and link.linkto=page.id
-					\x02order by data.mtime desc, page.name";
+				$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime,
+					${db_}data.content='\x01' as deleted
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=$id
+					and ${db_}link.linkto=${db_}page.id
+					\x02order by ${db_}data.mtime desc,
+					${db_}page.name";
 				if($ndays){
 					$from = strtotime($today)
 						-$ninfos*24*60*60;
@@ -2114,13 +2125,13 @@ function plugin($str, $DisplayPool, &$displaypool){
 						"/^(0*)(?:[1-9][0-9]*)?$/",
 						"\\1", $ninfos);
 					$query = str_replace("\x02",
-						"and data.mtime>='$from' \x02",
+						"and ${db_}data.mtime>='$from' \x02",
 						$query);
 					if($start){
 						$to = strtotime($today)-($start-1)*24*60*60;
 						$to = date("Y-m-d", $to);
 						$query = str_replace("\x02",
-							"and data.mtime<'$to' \x02",
+							"and ${db_}data.mtime<'$to' \x02",
 							$query);
 						$start = 0;
 					}
@@ -2133,15 +2144,18 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\MostPopular(@?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$query = "select page.id, page.name, page.hits, page.ctime,
-					page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and data.content!='\x01'
-					\x02order by page.hits desc, page.name";
+		$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}data.content!='\x01'
+				\x02order by ${db_}page.hits desc,
+				${db_}page.name";
 
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
@@ -2192,17 +2206,20 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			$iPagename = addslashes($ipagename);
 			$id = pageid($iPagename);
-			$query = "select page.id, page.name, page.hits,
-				page.ctime, page.locked, page.hidden,
-				data.author, data.ip, data.mtime
-				from page, data, link
-				where page.id=data.id
-				and page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"and link.linkfrom=page.id
-				and ".($id?"link.linkto=$id ":
-				"link.linktoname='$iPagename' ").
-				"\x02order by page.hits desc, page.name";
+			$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime
+				from ${db_}page, ${db_}data, ${db_}link
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}link.linkfrom=${db_}page.id
+				and ".($id?"${db_}link.linkto=$id ":
+				"${db_}link.linktoname='$iPagename' ").
+				"\x02order by ${db_}page.hits desc,
+				${db_}page.name";
 			$r = pagelist($query, $start, $ninfos, $porder);
 			$str = preg_replace("\x01\\\\MostPopularTo".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
@@ -2236,16 +2253,18 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$iPagename = addslashes($ipagename);
 			if(($id = pageid($iPagename)) &&
 					($admin || !is_hidden($iPagename))){
-				$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=$id
-					and link.linkto=page.id
-					\x02order by page.hits desc, page.name";
+				$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=$id
+					and ${db_}link.linkto=${db_}page.id
+					\x02order by ${db_}page.hits desc, ${db_}page.name";
 				$r = pagelist($query, $start, $ninfos, $porder);
 			}
 			$str = preg_replace("\x01\\\\MostPopularFrom".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
@@ -2254,15 +2273,17 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\AllPages(@?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$query = "select page.id, page.name, page.hits, page.ctime,
-					page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and data.content!='\x01'
-					\x02order by page.name";
+		$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}data.content!='\x01'
+				\x02order by ${db_}page.name";
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
 			$n = count($m[1]);
@@ -2312,17 +2333,19 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			$iPagename = addslashes($ipagename);
 			$id = pageid($iPagename);
-			$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=page.id
-					and ".($id?"link.linkto=$id ":
-					"link.linktoname='$iPagename' ").
-					"\x02order by page.name";
+			$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=${db_}page.id
+					and ".($id?"${db_}link.linkto=$id ":
+					"${db_}link.linktoname='$iPagename' ").
+					"\x02order by ${db_}page.name";
 			$r = pagelist($query, $start, $ninfos, $porder);
 			$str = preg_replace("\x01\\\\AllPagesTo".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
@@ -2356,16 +2379,18 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$iPagename = addslashes($ipagename);
 			if(($id = pageid($iPagename)) &&
 					($admin || !is_hidden($iPagename))){
-				$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=$id
-					and link.linkto=page.id
-					\x02order by page.name";
+				$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=$id
+					and ${db_}link.linkto=${db_}page.id
+					\x02order by ${db_}page.name";
 				$r = pagelist($query, $start, $ninfos, $porder);
 			}
 			$str = preg_replace("\x01\\\\AllPagesFrom".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
@@ -2374,15 +2399,18 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\RecentPages(@?\*?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$Query = "select page.id, page.name, page.hits, page.ctime,
-				page.locked, page.hidden,
-				data.author, data.ip, data.mtime
-				from page, data
-				where page.id=data.id
-				and page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"and data.content!='\x01'
-				\x02order by page.ctime desc, page.name";
+		$Query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}data.content!='\x01'
+				\x02order by ${db_}page.ctime desc,
+				${db_}page.name";
 
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
@@ -2412,13 +2440,13 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$from = date("Y-m-d", $from);
 				$ninfos = preg_replace("/^(0*)(?:[1-9][0-9]*)?$/", "\\1", $ninfos);
 				$query = str_replace("\x02",
-						"and page.ctime>='$from' \x02",
-						$query);
+					"and ${db_}page.ctime>='$from' \x02",
+					$query);
 				if($start){
 					$to = strtotime($today)-($start-1)*24*60*60;
 					$to = date("Y-m-d", $to);
 					$query = str_replace("\x02",
-						"and page.ctime<'$to' \x02",
+						"and ${db_}page.ctime<'$to' \x02",
 						$query);
 					$start = 0;
 				}
@@ -2460,29 +2488,31 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			$iPagename = addslashes($ipagename);
 			$id = pageid($iPagename);
-			$query = "select page.id, page.name, page.hits,
-				page.ctime, page.locked, page.hidden,
-				data.author, data.ip, data.mtime
-				from page, data, link
-				where page.id=data.id
-				and page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"and link.linkfrom=page.id
-				and ".($id?"link.linkto=$id ":
-				"link.linktoname='$iPagename' ").
-				"\x02order by page.ctime desc, page.name";
+			$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime
+				from ${db_}page, ${db_}data, ${db_}link
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}link.linkfrom=${db_}page.id
+				and ".($id?"${db_}link.linkto=$id ":
+				"${db_}link.linktoname='$iPagename' ").
+				"\x02order by ${db_}page.ctime desc, ${db_}page.name";
 			if($ndays){
 				$from = strtotime($today)-$ninfos*24*60*60;
 				$from = date("Y-m-d", $from);
 				$ninfos = preg_replace("/^(0*)(?:[1-9][0-9]*)?$/", "\\1", $ninfos);
 				$query = str_replace("\x02",
-						"and page.ctime>='$from' \x02",
+						"and ${db_}page.ctime>='$from' \x02",
 						$query);
 				if($start){
 					$to = strtotime($today)-($start-1)*24*60*60;
 					$to = date("Y-m-d", $to);
 					$query = str_replace("\x02",
-						"and page.ctime<'$to' \x02",
+						"and ${db_}page.ctime<'$to' \x02",
 						$query);
 					$start = 0;
 				}
@@ -2525,16 +2555,18 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$iPagename = addslashes($ipagename);
 			if(($id = pageid($iPagename)) &&
 					($admin || !is_hidden($iPagename))){
-				$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=$id
-					and link.linkto=page.id
-					\x02order by page.ctime desc, page.name";
+				$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=$id
+					and ${db_}link.linkto=${db_}page.id
+					\x02order by ${db_}page.ctime desc, ${db_}page.name";
 				if($ndays){
 					$from = strtotime($today)
 						-$ninfos*24*60*60;
@@ -2543,13 +2575,13 @@ function plugin($str, $DisplayPool, &$displaypool){
 						"/^(0*)(?:[1-9][0-9]*)?$/",
 						"\\1", $ninfos);
 					$query = str_replace("\x02",
-						"and page.ctime>='$from' \x02",
+						"and ${db_}page.ctime>='$from' \x02",
 						$query);
 					if($start){
 						$to = strtotime($today)-($start-1)*24*60*60;
 						$to = date("Y-m-d", $to);
 						$query = str_replace("\x02",
-							"and page.ctime<'$to' \x02",
+							"and ${db_}page.ctime<'$to' \x02",
 							$query);
 						$start = 0;
 					}
@@ -2562,14 +2594,16 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\RandomPages([0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$query = "select page.id, page.name, page.hits, page.ctime,
-					page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and data.content!='\x01' \x02";
+		$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime
+				from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}data.content!='\x01' \x02";
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
 			$n = count($m[1]);
@@ -2609,16 +2643,18 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			$iPagename = addslashes($ipagename);
 			$id = pageid($iPagename);
-			$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=page.id
-					and ".($id?"link.linkto=$id":
-					"link.linktoname='$iPagename'")." \x02";
+			$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=${db_}page.id
+					and ".($id?"${db_}link.linkto=$id":
+					"${db_}link.linktoname='$iPagename'")." \x02";
 			$r = pagelist($query, $start, $ninfos, 1);
 			$str = preg_replace("\x01\\\\RandomPagesTo".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
@@ -2647,15 +2683,17 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$iPagename = addslashes($ipagename);
 			if(($id = pageid($iPagename)) &&
 					($admin || !is_hidden($iPagename))){
-				$query = "select page.id, page.name, page.hits,
-					page.ctime, page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data, link
-					where page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and link.linkfrom=$id
-					and link.linkto=page.id \x02";
+				$query = "select ${db_}page.id, ${db_}page.name,
+					${db_}page.hits, ${db_}page.ctime,
+					${db_}page.locked, ${db_}page.hidden,
+					${db_}data.author, ${db_}data.ip,
+					${db_}data.mtime
+					from ${db_}page, ${db_}data, ${db_}link
+					where ${db_}page.id=${db_}data.id
+					and ${db_}page.version=${db_}data.version ".
+					($admin?"":"and ${db_}page.hidden=0 ").
+					"and ${db_}link.linkfrom=$id
+					and ${db_}link.linkto=${db_}page.id \x02";
 				$r = pagelist($query, $start, $ninfos, 1);
 			}
 			$str = preg_replace("\x01\\\\RandomPagesFrom".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
@@ -2664,11 +2702,11 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\RandomPage([0-9]*)(?![a-zA-Z])/", $str, $m))){
-		$query = "select page.name from page, data
-				where page.id=data.id
-				and page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"and data.content!='\x01' $limitlist[0]";
+		$query = "select ${db_}page.name from ${db_}page, ${db_}data
+				where ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}data.content!='\x01' $limitlist[0]";
 		$result = pm_query($db, $query);
 		$nrows = pm_num_rows($result);
 
@@ -2702,11 +2740,12 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			$iPagename = addslashes($ipagename);
 			$id = pageid($iPagename);
-			$query = "select page.name from page, link
-					where link.linkfrom=page.id
-					and ".($id?"link.linkto=$id":
-					"link.linktoname='$iPagename'").
-					($admin?"":" and page.hidden=0").
+			$query = "select ${db_}page.name
+					from ${db_}page, ${db_}link
+					where ${db_}link.linkfrom=${db_}page.id
+					and ".($id?"${db_}link.linkto=$id":
+					"${db_}link.linktoname='$iPagename'").
+					($admin?"":" and ${db_}page.hidden=0").
 					" $limitlist[0]";
 			$result = pm_query($db, $query);
 			$nrows = pm_num_rows($result);
@@ -2737,10 +2776,11 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$iPagename = addslashes($ipagename);
 			if(($id = pageid($iPagename)) &&
 					($admin || !is_hidden($iPagename))){
-				$query = "select page.name from page, link
-					where link.linkfrom=$id
-					and link.linkto=page.id".
-					($admin?"":" and page.hidden=0").
+				$query = "select ${db_}page.name
+					from ${db_}page, ${db_}link
+					where ${db_}link.linkfrom=$id
+					and ${db_}link.linkto=${db_}page.id".
+					($admin?"":" and ${db_}page.hidden=0").
 					" $limitlist[0]";
 				$result = pm_query($db, $query);
 				$nrows = pm_num_rows($result);
@@ -2759,22 +2799,23 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\OrphanedPages([@*]?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$query = "select page.id, page.name, page.hits, page.ctime,
-					page.locked, page.hidden,
-					data.author, data.ip, data.mtime
-					from page, data ".
-					($backendDB=="mysql"?
-					"left join link on page.id=link.linkto
-					and link.linkfrom!=link.linkto
-					where link.linkto is NULL ":
-					"where page.id not in
-					(select linkto from link
-					where linkfrom!=linkto) ").
-					"and page.id=data.id
-					and page.version=data.version ".
-					($admin?"":"and page.hidden=0 ").
-					"and page.name!='$wikiXFrontpage'
-					\x02order by page.name";
+		$query = "select ${db_}page.id, ${db_}page.name,
+				${db_}page.hits, ${db_}page.ctime,
+				${db_}page.locked, ${db_}page.hidden,
+				${db_}data.author, ${db_}data.ip,
+				${db_}data.mtime from ${db_}page, ${db_}data ".
+				($backendDB=="mysql"?
+				"left join link on ${db_}page.id=${db_}link.linkto
+				and ${db_}link.linkfrom!=${db_}link.linkto
+				where ${db_}link.linkto is NULL ":
+				"where ${db_}page.id not in
+				(select linkto from ${db_}link
+				where linkfrom!=linkto) ").
+				"and ${db_}page.id=${db_}data.id
+				and ${db_}page.version=${db_}data.version ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"and ${db_}page.name!='$wikiXFrontpage'
+				\x02order by ${db_}page.name";
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
 			$n = count($m[1]);
@@ -2807,13 +2848,14 @@ function plugin($str, $DisplayPool, &$displaypool){
 			return $str;
 	}
 	if(($n = preg_match_all("/\\\\WantedPages([@*]?[0-9]*(?:-[0-9]*)?)(?![a-zA-Z])/", $str, $m))){
-		$query = "select link.linktoname, count(link.linkfrom) as nlinks
-					from page, link
-					where link.linkto=0
-					and page.id=link.linkfrom ".
-					($admin?"":"and page.hidden=0 ").
-					"group by link.linktoname
-					order by nlinks desc, link.linktoname";
+		$query = "select ${db_}link.linktoname,
+				count(${db_}link.linkfrom) as nlinks
+				from ${db_}page, ${db_}link
+				where ${db_}link.linkto=0
+				and ${db_}page.id=${db_}link.linkfrom ".
+				($admin?"":"and ${db_}page.hidden=0 ").
+				"group by ${db_}link.linktoname
+				order by nlinks desc, ${db_}link.linktoname";
 		$result = pm_query($db, $query);
 		$nrows = pm_num_rows($result);
 
@@ -3420,10 +3462,11 @@ function plugin($str, $DisplayPool, &$displaypool){
 #unlimitedpool:			*/
 				($id = pageid($Page)) && ($admin ||
 				 !(is_hidden($Page) || is_site_hidden()))){
-				$query = "select data.content from page, data
-						where page.id=$id and
-						data.id=page.id and
-						data.version=page.version";
+				$query = "select ${db_}data.content
+						from ${db_}page, ${db_}data
+						where ${db_}page.id=$id and
+						${db_}data.id=${db_}page.id and
+						${db_}data.version=${db_}page.version";
 				$result = pm_query($db, $query);
 				$content = pm_fetch_result($result, 0, 0);
 				pm_free_result($result);
@@ -3595,7 +3638,7 @@ function pre($str, &$isblock, &$done){
 }
 
 function pagelist($query, $start, $ninfos, $order, $color = 0){
-	global	$db, $admin, $author, $login, $btime, $now, $pageName,
+	global	$db, $db_, $admin, $author, $login, $btime, $now, $pageName,
 		$limitlist;
 
 	$query = str_replace("\x02", $limitlist[0], $query);
@@ -3735,13 +3778,13 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 		}
 
 		if(!$mode){
-			$query = "select count(linkfrom) from link
+			$query = "select count(linkfrom) from ${db_}link
 						where linkfrom=$data[id]";
 			$result0 = pm_query($db, $query);
 			$linkfrom = pm_fetch_result($result0, 0, 0);
 			pm_free_result($result0);
 			$iPagename = addslashes($data['name']);
-			$query = "select count(linkto) from link
+			$query = "select count(linkto) from ${db_}link
 						where linkto=$data[id]
 						or linktoname='$iPagename'";
 			$result0 = pm_query($db, $query);

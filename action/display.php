@@ -3,23 +3,27 @@ if(!$admin && is_site_hidden()){
 	echo "Sorry, it's a hidden sit<a class=\"general\" href=\"admin.php?$arg\">e</a>.\n";
 	return;
 }
+
 if(!($id = pageid0($Pagename))){
 	echo "$pagename: No such page found.\n";
 	return;
 }
+
 if(!$admin && is_hidden($Pagename)){
 	echo "$pagename: Sorry, it's a hidden page.\n";
 	return;
 }
 
-$version = "page.version";
+$version = "${db_}page.version";
 if($v0 != "")
 	$version = $v0;
 
-$query = "select page.hits, page.locked, page.hidden, page.version as current,
-			data.id, data.version, data.author, data.ip, data.mtime
-			from page, data where page.id=$id and
-			data.id=page.id and data.version=$version";
+$query = "select ${db_}page.hits, ${db_}page.locked, ${db_}page.hidden,
+		${db_}page.version as current, ${db_}data.id,
+		${db_}data.version, ${db_}data.author, ${db_}data.ip,
+		${db_}data.mtime
+		from ${db_}page, ${db_}data where ${db_}page.id=$id and
+		${db_}data.id=${db_}page.id and ${db_}data.version=$version";
 $result = pm_query($db, $query);
 if(($r = pm_num_rows($result)))
 	$data = pm_fetch_array($result, 0);
@@ -30,7 +34,7 @@ if(!$r){
 }
 
 if($author !== $data['author'] && $ip !== $data['ip']){
-	$query = "update page set hits=hits+1 where id=$id";
+	$query = "update ${db_}page set hits=hits+1 where id=$id";
 	$result = pm_query($db, $query);
 	$data['hits']++;
 }
@@ -71,7 +75,7 @@ if(preg_match("/^\\\\RedirectTo:([^\r\n]+)/", $data['content'], $m)){
 }
 /******************************************************************************/
 
-$query = "select min(version) from data where id=$id";
+$query = "select min(version) from ${db_}data where id=$id";
 $result = pm_query($db, $query);
 $minversion = pm_fetch_result($result, 0, 0);
 pm_free_result($result);

@@ -4,6 +4,7 @@ $dbName = "wikix";
 $dbHost = "";
 $dbUser = "";
 $dbPass = "";
+$db_ = ""; # DB table prefix
 $initIP = ""; # wikiX initializer IP
 
 # wikiX root directory ex) /usr/home/user/html/wikix

@@ -1,0 +1,91 @@
+drop table if exists ${db_}admindb;
+drop table if exists ${db_}userdb;
+drop table if exists ${db_}site;
+drop table if exists ${db_}page;
+drop table if exists ${db_}data;
+drop table if exists ${db_}link;
+drop table if exists ${db_}taggedlink;
+drop table if exists ${db_}file;
+
+create table ${db_}admindb(
+	id varchar(100) binary primary key,
+	pw varchar(32),
+	sid varchar(32),
+	btime varchar(25),
+	cip varchar(20),
+	ctime varchar(25),
+	mip varchar(20),
+	mtime varchar(25)
+);
+
+create table ${db_}userdb(
+	id varchar(100) binary primary key,
+	pw varchar(32),
+	sid varchar(32),
+	btime varchar(25),
+	cip varchar(20),
+	ctime varchar(25),
+	mip varchar(20),
+	mtime varchar(25)
+);
+
+create table ${db_}site(
+	locked char,
+	hidden char
+);
+insert into ${db_}site values(0, 0);
+
+create table ${db_}page(
+	id int default 0 primary key,
+	name tinyblob,
+	cauthor varchar(100) binary,
+	cip varchar(20),
+	ctime varchar(25),
+	hits int,
+	locked char,
+	hidden char,
+	tag int,
+	version int
+);
+
+create table ${db_}data(
+	id int not null,
+	version int not null,
+	author varchar(100) binary,
+	ip varchar(20),
+	mtime varchar(25),
+	content longblob,
+	primary key(id, version)
+);
+
+create table ${db_}link(
+	linkfrom int,
+	linkto int,
+	linktoname tinyblob
+);
+
+create table ${db_}taggedlink(
+	linkfrom int,
+	linkto int,
+	linktoname tinyblob
+);
+
+create table ${db_}file(
+	id int unique,
+	file tinyblob not null,
+	page tinyblob not null,
+	version int,
+	author varchar(100) binary,
+	ip varchar(20),
+	mtime varchar(25),
+	primary key(page(245), file(255))
+);
+
+grant all on ${db_}admindb to nobody;
+grant all on ${db_}userdb to nobody;
+grant all on ${db_}site to nobody;
+grant all on ${db_}page to nobody;
+grant all on ${db_}data to nobody;
+grant all on ${db_}link to nobody;
+grant all on ${db_}taggedlink to nobody;
+grant all on ${db_}file to nobody;

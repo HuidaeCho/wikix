@@ -12,14 +12,13 @@ if(!$admin && is_hidden($Pagename)){
 	return;
 }
 
-$query = "select page.name from link, page
-			where link.linkfrom=$id and link.linkto=page.id ".
-			($admin?"":"and page.hidden=0 ").
-			"order by page.name";
+$query = "select ${db_}page.name from ${db_}link, ${db_}page
+	where ${db_}link.linkfrom=$id and ${db_}link.linkto=${db_}page.id ".
+	($admin?"":"and ${db_}page.hidden=0 ")."order by ${db_}page.${db_}name";
 $result1 = pm_query($db, $query);
 $nlinks1 = pm_num_rows($result1);
 
-$query = "select linktoname from link
+$query = "select linktoname  ${db_}link
 			where linkfrom=$id and linkto=0
 			order by linktoname";
 $result2 = pm_query($db, $query);

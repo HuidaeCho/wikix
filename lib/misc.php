@@ -574,7 +574,7 @@ function gnuplot($file, $str, $opt){
 }
 
 function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
-	global	$backendDB, $admin, $caseinsensitiveSearch;
+	global	$backendDB, $db_, $admin, $caseinsensitiveSearch;
 
 	if($caseinsensitiveSearch){
 		$ibegin = "lower(";
@@ -584,7 +584,7 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 		$iend = "";
 	}
 	$tc = 0x0;
-	$order = " order by page.name asc";
+	$order = " order by ${db_}page.name asc";
 	$regex = 0;
 	$iregex = "";
 	$range = 0;
@@ -617,13 +617,13 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 				$range = 1;
 				break;
 			case "R":
-				$order = " order by data.mtime desc, page.name asc";
+				$order = " order by ${db_}data.mtime desc, ${db_}page.name asc";
 				break;
 			case "M":
-				$order = " order by page.hits desc, page.name asc";
+				$order = " order by ${db_}page.hits desc, ${db_}page.name asc";
 				break;
 			case "P":
-				$order = " order by page.ctime desc, page.name asc";
+				$order = " order by ${db_}page.ctime desc, ${db_}page.name asc";
 				break;
 			case "-":
 				if($order != ""){
@@ -683,27 +683,27 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 	}
 	if($regex){
 		if($backendDB == "mysql")
-			$where = ($tc&0x1?"${ibegin}page.name$iend regexp
+			$where = ($tc&0x1?"${ibegin}${db_}page.name$iend regexp
 					$ibegin'$where'$iend":"").$tcop.
-				($tc&0x2?"${ibegin}data.content$iend regexp
+				($tc&0x2?"${ibegin}${db_}data.content$iend regexp
 					$ibegin'$where'$iend":"");
 		else
-			$where = ($tc&0x1?"page.name ~$iregex '$where'":"").
+			$where = ($tc&0x1?"${db_}page.name ~$iregex '$where'":"").
 				$tcop.
-				($tc&0x2?"data.content ~$iregex '$where'":"");
+				($tc&0x2?"${db_}data.content ~$iregex '$where'":"");
 	}else
 	if($range){
 		list($from, $to) = explode("\x02", $where);
 		if($from != "")
-			$where = ($tc&0x1?"${ibegin}page.name$iend >=
+			$where = ($tc&0x1?"${ibegin}${db_}page.name$iend >=
 					$ibegin'$from'$iend":"").$tcop.
-				($tc&0x2?"${ibegin}data.content$iend >=
+				($tc&0x2?"${ibegin}${db_}data.content$iend >=
 					$ibegin'$from'$iend":"");
 		if($to != "")
 			$where = ($from==""?"":"($where) and (").
-				($tc&0x1?"${ibegin}page.name$iend <
+				($tc&0x1?"${ibegin}${db_}page.name$iend <
 					$ibegin'$to'$iend":"").$tcop.
-				($tc&0x2?"${ibegin}data.content$iend <
+				($tc&0x2?"${ibegin}${db_}data.content$iend <
 					$ibegin'$to'$iend":"").
 				($from==""?"":")");
 	}else{
@@ -711,30 +711,30 @@ function search_query(&$search, &$tc, &$ibegin, &$iend, &$order, &$regex){
 		$where = str_replace("_", "\\_", $where);
 		$where = preg_replace("/\x03(.*?)\x03/s",
 				(($tc&0x3)==0x3?"(":"").
-				($tc&0x1?"${ibegin}page.name$iend like
+				($tc&0x1?"${ibegin}${db_}page.name$iend like
 					$ibegin'%\\1%'$iend":"").$tcop.
-				($tc&0x2?"${ibegin}data.content$iend like
+				($tc&0x2?"${ibegin}${db_}data.content$iend like
 					$ibegin'%\\1%'$iend":"").
 				(($tc&0x3)==0x3?")":""), $where);
 		$where = preg_replace("/\x07(.*?)\x07/s",
 				(($tc&0x3)==0x3?"(":"").
-				($tc&0x1?"${ibegin}page.name$iend not like
+				($tc&0x1?"${ibegin}${db_}page.name$iend not like
 					$ibegin'%\\1%'$iend":"").
 				(($tc&0x3)==0x3?" and ":"").
-				($tc&0x2?"${ibegin}data.content$iend not like
+				($tc&0x2?"${ibegin}${db_}data.content$iend not like
 					$ibegin'%\\1%'$iend":"").
 				(($tc&0x3)==0x3?")":""), $where);
 	}
 
-	$query = "select page.id, page.name, page.hits, page.ctime,
-				page.locked, page.hidden,
-				data.author, data.ip, data.mtime
-				from page, data
-				where page.id=data.id and
-				page.version=data.version ".
-				($admin?"":"and page.hidden=0 ").
-				"and data.content!='\x01'
-				and ($where) \x02$order";
+	$query = "select ${db_}page.id, ${db_}page.name, ${db_}page.hits,
+			${db_}page.ctime, ${db_}page.locked, ${db_}page.hidden,
+			${db_}data.author, ${db_}data.ip, ${db_}data.mtime
+			from ${db_}page, ${db_}data
+			where ${db_}page.id=${db_}data.id and
+			${db_}page.version=${db_}data.version ".
+			($admin?"":"and ${db_}page.hidden=0 ").
+			"and ${db_}data.content!='\x01'
+			and ($where) \x02$order";
 
 	return $query;
 }

@@ -10,7 +10,7 @@ if(!is_site_locked()){
 	return;
 }
 
-$query = "select id, tag, version from page where tag>0 order by id";
+$query = "select id, tag, version from ${db_}page where tag>0 order by id";
 $result = pm_query($db, $query);
 $n = pm_num_rows($result);
 
@@ -23,19 +23,19 @@ for($i=0; $i<$n; $i++){
 		continue;
 	$content = page_content($id, $tag);
 	$content = addslashes($content);
-	$query = "update data set content='$content'
+	$query = "update ${db_}data set content='$content'
 				where id=$id and version=$tag";
 	$result0 = pm_query($db, $query);
-	$query = "update page set version=$tag where id=$id";
+	$query = "update ${db_}page set version=$tag where id=$id";
 	$result0 = pm_query($db, $query);
-	$query = "delete from data where id=$id and version>$tag";
+	$query = "delete from ${db_}data where id=$id and version>$tag";
 	$result0 = pm_query($db, $query);
 
-	$query = "delete from link where linkfrom=$id";
+	$query = "delete from ${db_}link where linkfrom=$id";
 	$result0 = pm_query($db, $query);
-	$query = "insert into link (linkfrom, linkto, linktoname)
-		select linkfrom, linkto, linktoname from taggedlink
-				where linkfrom=$id";
+	$query = "insert into ${db_}link (linkfrom, linkto, linktoname)
+		select linkfrom, linkto, linktoname from ${db_}taggedlink
+		where linkfrom=$id";
 	$result0 = pm_query($db, $query);
 }
 pm_free_result($result);

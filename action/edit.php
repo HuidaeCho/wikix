@@ -45,9 +45,9 @@ if(isset($content))
 else
 	$content = "";
 if(!$locked && $v0 != ""){
-	$query = "select page.version from page, data
-				where page.name='$Pagename' and
-				data.id=page.id and data.version=$v0";
+	$query = "select ${db_}page.version from ${db_}page, ${db_}data
+			where ${db_}page.name='$Pagename' and
+			${db_}data.id=${db_}page.id and ${db_}data.version=$v0";
 	$result = pm_query($db, $query);
 	if(($r0 = pm_num_rows($result)))
 		$r = pm_fetch_result($result, 0, 0);
@@ -61,7 +61,7 @@ if(!$locked && $v0 != ""){
 }
 
 if($subaction != ""){
-	$query = "select version from page where name='$Pagename'";
+	$query = "select version from ${db_}page where name='$Pagename'";
 	$result = pm_query($db, $query);
 	$n = pm_num_rows($result);
 	if(($n && $version != pm_fetch_result($result, 0, 0)) ||
@@ -73,14 +73,17 @@ if($subaction != ""){
 }
 
 if($subaction == "" || $subaction == "Save"){
-	$version="page.version";
+	$version="${db_}page.version";
 	if($v0 != "")
 		$version = $v0;
-	$query = "select page.hits, page.locked, page.hidden,
-			page.version as current,
-			data.id, data.version, data.author, data.ip, data.mtime
-			from page, data where page.name='$Pagename' and
-			data.id=page.id and data.version=$version";
+	$query = "select ${db_}page.hits, ${db_}page.locked, ${db_}page.hidden,
+			${db_}page.version as current, ${db_}data.id,
+			${db_}data.version, ${db_}data.author, ${db_}data.ip,
+			${db_}data.mtime
+			from ${db_}page, ${db_}data
+			where ${db_}page.name='$Pagename'
+			and ${db_}data.id=${db_}page.id
+			and ${db_}data.version=$version";
 	$result = pm_query($db, $query);
 	if(($r0 = pm_num_rows($result)))
 		$data = pm_fetch_array($result, 0);
@@ -90,7 +93,7 @@ if($subaction == "" || $subaction == "Save"){
 		if($data['content'] == "\x01")
 			$data['content'] = "";
 		if($subaction == ""){
-			$query = "select min(version) from data
+			$query = "select min(version) from ${db_}data
 						where id=$data[id]";
 			$result = pm_query($db, $query);
 			$minversion = pm_fetch_result($result, 0, 0);
@@ -228,23 +231,23 @@ if($subaction == "Save"){
 
 		$diff = diff($content, $data['content']);
 		$diff = addslashes($diff);
-		$query = "update data set content='$diff'
+		$query = "update ${db_}data set content='$diff'
 				where id=$id and version=$version";
 		$result = pm_query($db, $query);
 
 		$version++;
-		$query = "update page set version=$version,
+		$query = "update ${db_}page set version=$version,
 				locked=$ilock, hidden=$ihide where id=$id";
 		$result = pm_query($db, $query);
 	}else{
 		$id = 1;
 		$version = 1;
-		$query = "select max(id) from page";
+		$query = "select max(id) from ${db_}page";
 		$result = pm_query($db, $query);
 		if(pm_num_rows($result))
 			$id = pm_fetch_result($result, 0, 0) + 1;
 		pm_free_result($result);
-		$query = "insert into page (id, name, cauthor, cip, ctime,
+		$query = "insert into ${db_}page (id, name, cauthor, cip, ctime,
 				hits, locked, hidden, tag, version)
 				values($id, '$Pagename', '$author', '$ip',
 				'$now', 0, $ilock, $ihide, 0, $version)";
@@ -252,7 +255,7 @@ if($subaction == "Save"){
 	}
 
 	$content = addslashes($content);
-	$query = "insert into data (id, version, author, ip, mtime, content)
+	$query = "insert into ${db_}data (id, version, author, ip, mtime, content)
 		values($id, $version, '$author', '$ip', '$now', '$content')";
 	$result0 = pm_query($db, $query);
 
@@ -265,11 +268,11 @@ if($subaction == "Save"){
 	if(!$result0)
 		return;
 
-	$query = "update link set linkto=$id0, linktoname=''
+	$query = "update ${db_}link set linkto=$id0, linktoname=''
 				where linktoname='$Pagename0'";
 	$result = pm_query($db, $query);
 
-	$query = "delete from link where linkfrom=$id0";
+	$query = "delete from ${db_}link where linkfrom=$id0";
 	$result = pm_query($db, $query);
 
 	if($id == $id0){
@@ -279,12 +282,12 @@ if($subaction == "Save"){
 		$nlinks = count($link);
 		for($i=0; $i<$nlinks; $i++){
 			if(preg_match("/^-(.*)$/", $link[$i], $m))
-				$query = "insert into link
+				$query = "insert into ${db_}link
 						(linkfrom, linkto, linktoname)
 						values($id, 0,
 						'".addslashes($m[1])."')";
 			else
-				$query = "insert into link
+				$query = "insert into ${db_}link
 						(linkfrom, linkto, linktoname)
 						values($id, $link[$i], '')";
 			$result = pm_query($db, $query);

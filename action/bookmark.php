@@ -8,7 +8,7 @@ if($login){
 		$btime = "";
 	else
 		$btime = date("Y-m-d H:i:s", $v0);
-	$query = "update ".($admin?"admindb":"userdb").
+	$query = "update ${db_}".($admin?"admindb":"userdb").
 			" set btime='$btime' where id='$author'";
 	$result = pm_query($db, $query);
 }

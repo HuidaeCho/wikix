@@ -6,6 +6,6 @@ if(invalid_access()){
 if(!$admin || !is_site_hidden())
 	return;
 
-$query = "update site set hidden=0";
+$query = "update ${db_}site set hidden=0";
 $result = pm_query($db, $query);
 ?>

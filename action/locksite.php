@@ -6,6 +6,6 @@ if(invalid_access()){
 if(!$admin || is_site_locked())
 	return;
 
-$query = "update site set locked=1";
+$query = "update ${db_}site set locked=1";
 $result = pm_query($db, $query);
 ?>

@@ -1,0 +1,91 @@
+drop table ${db_}admindb;
+drop table ${db_}userdb;
+drop table ${db_}site;
+drop table ${db_}page;
+drop table ${db_}data;
+drop table ${db_}link;
+drop table ${db_}taggedlink;
+drop table ${db_}file;
+
+create table ${db_}admindb(
+	id varchar(100) primary key,
+	pw varchar(32),
+	sid varchar(32),
+	btime varchar(25),
+	cip varchar(20),
+	ctime varchar(25),
+	mip varchar(20),
+	mtime varchar(25)
+);
+
+create table ${db_}userdb(
+	id varchar(100) primary key,
+	pw varchar(32),
+	sid varchar(32),
+	btime varchar(25),
+	cip varchar(20),
+	ctime varchar(25),
+	mip varchar(20),
+	mtime varchar(25)
+);
+
+create table ${db_}site(
+	locked char,
+	hidden char
+);
+insert into ${db_}site values(0, 0);
+
+create table ${db_}page(
+	id int default 0 primary key,
+	name varchar(255),
+	cauthor varchar(100),
+	cip varchar(20),
+	ctime varchar(25),
+	hits int,
+	locked char,
+	hidden char,
+	tag int,
+	version int
+);
+
+create table ${db_}data(
+	id int not null,
+	version int not null,
+	author varchar(100),
+	ip varchar(20),
+	mtime varchar(25),
+	content text,
+	primary key(id, version)
+);
+
+create table ${db_}link(
+	linkfrom int,
+	linkto int,
+	linktoname varchar(255)
+);
+
+create table ${db_}taggedlink(
+	linkfrom int,
+	linkto int,
+	linktoname varchar(255)
+);
+
+create table ${db_}file(
+	id int unique,
+	file varchar(255) not null,
+	page varchar(255) not null,
+	version int,
+	author varchar(100),
+	ip varchar(20),
+	mtime varchar(25),
+	primary key(page, file)
+);
+
+grant all on ${db_}admindb to nobody;
+grant all on ${db_}userdb to nobody;
+grant all on ${db_}site to nobody;
+grant all on ${db_}page to nobody;
+grant all on ${db_}data to nobody;
+grant all on ${db_}link to nobody;
+grant all on ${db_}taggedlink to nobody;
+grant all on ${db_}file to nobody;

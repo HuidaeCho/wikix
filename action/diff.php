@@ -12,7 +12,7 @@ if(!$admin && is_hidden($Pagename)){
 	return;
 }
 
-$query = "select hits, hidden, locked, version from page where id=$id";
+$query = "select hits, hidden, locked, version from ${db_}page where id=$id";
 $result = pm_query($db, $query);
 $page = pm_fetch_array($result, 0);
 pm_free_result($result);
@@ -21,7 +21,7 @@ if($page['version'] == 1){
 	return;
 }
 
-$query = "select min(version) from data where id=$id";
+$query = "select min(version) from ${db_}data where id=$id";
 $result = pm_query($db, $query);
 $minversion = pm_fetch_result($result, 0, 0);
 pm_free_result($result);
@@ -29,7 +29,7 @@ pm_free_result($result);
 if($v0 == "" && $v1 == ""){
 	if($login){
 		$v1 = $page['version'];
-		$query = "select btime from ".($admin?"admindb":"userdb").
+		$query = "select btime from ${db_}".($admin?"admindb":"userdb").
 				" where id='$author'";
 		$result = pm_query($db, $query);
 		$btime = pm_fetch_result($result, 0, 0);
@@ -37,7 +37,7 @@ if($v0 == "" && $v1 == ""){
 		if($btime == "")
 			$v0 = $v1 - 1;
 		else{
-			$query = "select version from data
+			$query = "select version from ${db_}data
 					where id=$id and mtime < '$btime'
 					order by mtime desc limit 1";
 			$result = pm_query($db, $query);
@@ -76,7 +76,7 @@ if($v0 < $minversion || $v1 > $page['version']){
 
 $showsize = ($admin||!$page['locked']);
 
-$query = "select author, mtime from data where id=$id and
+$query = "select author, mtime from ${db_}data where id=$id and
 			(version=$v0 or version=$v1)
 			order by version";
 $result = pm_query($db, $query);

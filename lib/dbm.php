@@ -10,23 +10,26 @@ function closedb(&$db){
 }
 
 function pageid0($Pagename){
-	global	$db;
+	global	$db, $db_;
 
-	$query = "select id from page where name='$Pagename'";
+	$query = "select id from ${db_}page where name='$Pagename'";
 	$result = pm_query($db, $query);
 	$ret = 0;
 	if(pm_num_rows($result))
 		$ret = pm_fetch_result($result, 0, 0);
 	pm_free_result($result);
+
 	return $ret;
 }
 
 function pageid($Pagename){
-	global	$db;
+	global	$db, $db_;
 
-	$query = "select page.id from page, data
-			where page.id=data.id and page.version=data.version
-			and page.name='$Pagename' and data.content!='\x01'";
+	$query = "select ${db_}page.id from ${db_}page, ${db_}data
+			where ${db_}page.id=${db_}data.id
+			and ${db_}page.version=${db_}data.version
+			and ${db_}page.name='$Pagename'
+			and ${db_}data.content!='\x01'";
 	$result = pm_query($db, $query);
 	$ret = 0;
 	if(pm_num_rows($result))
@@ -36,9 +39,9 @@ function pageid($Pagename){
 }
 
 function pagename($pageid){
-	global	$db;
+	global	$db, $db_;
 
-	$query = "select name from page where id=$pageid";
+	$query = "select name from ${db_}page where id=$pageid";
 	$result = pm_query($db, $query);
 	$ret = "";
 	if(pm_num_rows($result))
@@ -48,13 +51,14 @@ function pagename($pageid){
 }
 
 function add_file($file){
-	global	$db, $Pagename, $author, $ip;
+	global	$db, $db_, $Pagename, $author, $ip;
 	static	$once = 1, $v;
 
 	if($once){
 		$v = 0;
 		if(($pageid = pageid($Pagename))){
-			$query = "select version from page where id=$pageid";
+			$query = "select version from ${db_}page
+							where id=$pageid";
 			$result = pm_query($db, $query);
 			$v = pm_fetch_result($result, 0, 0);
 			pm_free_result($result);
@@ -62,7 +66,7 @@ function add_file($file){
 		$once = 0;
 	}
 	$i = 1;
-	$query = "select max(id) from file";
+	$query = "select max(id) from ${db_}file";
 	$result = pm_query($db, $query);
 	if(pm_num_rows($result))
 		$i = pm_fetch_result($result, 0, 0) + 1;
@@ -70,20 +74,21 @@ function add_file($file){
 
 	$f = addslashes($file);
 	$m = date("Y-m-d H:i:s");
-	$query = "insert into file (id, file, page, version, author, ip, mtime)
+	$query = "insert into ${db_}file
+		(id, file, page, version, author, ip, mtime)
 		values($i, '$f', '$Pagename', $v, '$author', '$ip', '$m')";
 	$result = pm_query($db, $query);
 }
 
 function uploadedfiles($Pagename, $table = 0){
-	global	$db, $admin, $login, $author, $wikiXdir, $caseinsensitiveSearch;
+	global	$db, $db_, $admin, $login, $author, $wikiXdir, $caseinsensitiveSearch;
 
 	if(!$admin &&
 	   (($Pagename != "" && is_hidden($Pagename)) || is_site_hidden()))
 		return "";
 
 	$query = "select ".($Pagename==""?"page, ":"").
-		"id, file, author, ip, mtime, version from file ".
+		"id, file, author, ip, mtime, version from ${db_}file ".
 		($Pagename==""?"":"where page='$Pagename' ").
 		"order by page, file";
 	$result = pm_query($db, $query);
@@ -108,7 +113,7 @@ function uploadedfiles($Pagename, $table = 0){
 		$data = pm_fetch_array($result, $i);
 		$deleted = 0;
 		if(!file_exists("$wikiXdir/$data[file]")){
-			$query = "delete from file where id=$data[id]";
+			$query = "delete from ${db_}file where id=$data[id]";
 			$result0 = pm_query($db, $query);
 
 			$d = dirname($data['file']);
@@ -212,7 +217,7 @@ function uploadedfiles($Pagename, $table = 0){
 }
 
 function linkup($Pagename, $depth, $idepth){
-	global	$db, $admin, $LinkPool;
+	global	$db, $db_, $admin, $LinkPool;
 
 	$pagename0 = stripslashes($Pagename);
 	$pagename = str_replace("\\", "\x03", $pagename0);
@@ -240,13 +245,13 @@ function linkup($Pagename, $depth, $idepth){
 
 	if(--$idepth){
 		if($pageid)
-			$where = "link.linkto=$pageid";
+			$where = "${db_}link.linkto=$pageid";
 		else
-			$where = "link.linktoname='$Pagename'";
+			$where = "${db_}link.linktoname='$Pagename'";
 
-		$query = "select page.name from link, page
-					where $where and link.linkfrom=page.id
-					order by page.name";
+		$query = "select ${db_}page.name from ${db_}link, ${db_}page
+			where $where and ${db_}link.linkfrom=${db_}page.id
+			order by ${db_}page.name";
 		$result = pm_query($db, $query);
 		$nlinks = pm_num_rows($result);
 
@@ -265,7 +270,7 @@ function linkup($Pagename, $depth, $idepth){
 }
 
 function linkdown($Pagename, $depth, $idepth){
-	global	$db, $admin, $LinkPool;
+	global	$db, $db_, $admin, $LinkPool;
 
 	$pagename0 = stripslashes($Pagename);
 	$pagename = str_replace("\\", "\x03", $pagename0);
@@ -295,14 +300,14 @@ function linkdown($Pagename, $depth, $idepth){
 		return $ret;
 
 	if(--$idepth){
-		$query = "select page.name from link, page
-					where link.linkfrom=$pageid
-					and link.linkto=page.id
-					order by page.name";
+		$query = "select ${db_}page.name from ${db_}link, ${db_}page
+					where ${db_}link.linkfrom=$pageid
+					and ${db_}link.linkto=${db_}page.id
+					order by ${db_}page.name";
 		$result1 = pm_query($db, $query);
 		$nlinks1 = pm_num_rows($result1);
 
-		$query = "select linktoname from link
+		$query = "select linktoname from ${db_}link
 					where linkfrom=$pageid and linkto=0
 					order by linktoname";
 		$result2 = pm_query($db, $query);
@@ -335,7 +340,8 @@ function linkdown($Pagename, $depth, $idepth){
 }
 
 function redirect_to(&$pagename0, &$content, $edit, &$editpage){
-	global	$db, $admin, $beginEditRedirectedPage, $sepEditRedirectedPage,
+	global	$db, $db_, $admin,
+		$beginEditRedirectedPage, $sepEditRedirectedPage,
 		$endEditRedirectedPage;
 	static	$RedirectPool = array();
 
@@ -374,12 +380,12 @@ function redirect_to(&$pagename0, &$content, $edit, &$editpage){
 	if($pagename0 != "\x02")
 		$RedirectPool[] = $pagename0;
 	$pagename0 = $page0;
-	$content = page_content($pageid, "page.version");
+	$content = page_content($pageid, "${db_}page.version");
 	return redirect_to($pagename0, $content, $edit, $editpage);
 }
 
 function include_page($pagename0, $content, $allowed = 0){
-	global	$db, $bs, $admin, $action;
+	global	$db, $db_, $bs, $admin, $action;
 	static	$IncludePool = array();
 
 	if($pagename0 == "\x01"){
@@ -404,15 +410,15 @@ function include_page($pagename0, $content, $allowed = 0){
 				($pageid = pageid($Pagename)) &&
 				($admin || $allowed ||
 				 !(is_hidden($Pagename) || is_site_hidden()))){
-				$query = "select data.content from page, data
-					where page.id=$pageid and
-					data.id=page.id and
-					data.version=page.version";
+				$query = "select ${db_}data.content
+					from ${db_}page, ${db_}data
+					where ${db_}page.id=$pageid and
+					${db_}data.id=${db_}page.id and
+					${db_}data.version=${db_}page.version";
 				$result = pm_query($db, $query);
 				$r = pm_fetch_result($result, 0, 0);
 				pm_free_result($result);
-				$r = str_replace("$", "\\$",
-					str_replace("\\", $bs, $r));
+				$r = str_replace("\\", $bs, $r);
 			}
 			$content = preg_replace("\x01^\\\\IncludePage:".preg_quote($m[1][$i])."$\x01m", $r, $content);
 			$content = include_page($pagename0, $content, $allowed);
@@ -422,7 +428,7 @@ function include_page($pagename0, $content, $allowed = 0){
 }
 
 function is_locked($Pagename){
-	global	$db, $mustLogin, $author, $ip;
+	global	$db, $db_, $mustLogin, $author, $ip;
 
 	if($mustLogin && $author === $ip)
 		return 1;
@@ -431,7 +437,8 @@ function is_locked($Pagename){
 		return 1;
 */
 
-	$query = "select locked from page where name='$Pagename' and locked=1";
+	$query = "select locked from ${db_}page
+				where name='$Pagename' and locked=1";
 	$result = pm_query($db, $query);
 	$ret = pm_num_rows($result);
 	pm_free_result($result);
@@ -439,14 +446,15 @@ function is_locked($Pagename){
 }
 
 function is_hidden($Pagename){
-	global	$db;
+	global	$db, $db_;
 
 /*
 	if(is_site_hidden())
 		return 1;
 */
 
-	$query = "select hidden from page where name='$Pagename' and hidden=1";
+	$query = "select hidden from ${db_}page
+				where name='$Pagename' and hidden=1";
 	$result = pm_query($db, $query);
 	$ret = pm_num_rows($result);
 	pm_free_result($result);
@@ -454,12 +462,12 @@ function is_hidden($Pagename){
 }
 
 function is_site_locked(){
-	global	$db, $mustLogin, $author, $ip;
+	global	$db, $db_, $mustLogin, $author, $ip;
 
 	if($mustLogin && $author === $ip)
 		return 1;
 
-	$query = "select locked from site where locked=1";
+	$query = "select locked from ${db_}site where locked=1";
 	$result = pm_query($db, $query);
 	$ret = pm_num_rows($result);
 	pm_free_result($result);
@@ -467,9 +475,9 @@ function is_site_locked(){
 }
 
 function is_site_hidden(){
-	global	$db;
+	global	$db, $db_;
 
-	$query = "select hidden from site where hidden=1";
+	$query = "select hidden from ${db_}site where hidden=1";
 	$result = pm_query($db, $query);
 	$ret = pm_num_rows($result);
 	pm_free_result($result);
@@ -477,10 +485,10 @@ function is_site_hidden(){
 }
 
 function npages(){
-	global	$db, $admin;
+	global	$db, $db_, $admin;
 
-	$query = "select count(id) from page".
-				($admin?"":" where page.hidden=0");
+	$query = "select count(id) from ${db_}page".
+				($admin?"":" where ${db_}page.hidden=0");
 	$result = pm_query($db, $query);
 	$ret = pm_fetch_result($result, 0, 0);
 	pm_free_result($result);
@@ -488,11 +496,11 @@ function npages(){
 }
 
 function btime(){
-	global	$db, $login, $admin, $author;
+	global	$db, $db_, $login, $admin, $author;
 
 	if(!$login)
 		return "";
-	$query = "select btime from ".($admin?"admindb":"userdb").
+	$query = "select btime from ${db_}".($admin?"admindb":"userdb").
 				" where id='$author'";
 	$result = pm_query($db, $query);
 	$ret = pm_fetch_result($result, 0, 0);
@@ -501,20 +509,22 @@ function btime(){
 }
 
 function page_content($pageid, $version){
-	global	$db;
+	global	$db, $db_;
 
-	$query = "select data.content, page.version as current from page, data
-				where data.id=$pageid and data.id=page.id and
-				data.version=page.version";
+	$query = "select ${db_}data.content, ${db_}page.version as current
+			from ${db_}page, ${db_}data
+			where ${db_}data.id=$pageid
+			and ${db_}data.id=${db_}page.id and
+			${db_}data.version=${db_}page.version";
 	$result = pm_query($db, $query);
 	$data = pm_fetch_array($result, 0);
 	pm_free_result($result);
-	if($version == "page.version" || $version == $data['current'])
+	if($version == "${db_}page.version" || $version == $data['current'])
 		return $data['content'];
 
 	$content = $data['content'];
 	for($v=$data['current']-1; $v>=$version; $v--){
-		$query = "select content from data
+		$query = "select content from ${db_}data
 					where id=$pageid and version=$v";
 		$result = pm_query($db, $query);
 		$diff = pm_fetch_result($result, 0, 0);

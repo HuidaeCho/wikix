@@ -1,0 +1,9 @@
+create index idx_${db_}admindb on ${db_}admindb(id, pw);
+create index idx_${db_}userdb on ${db_}userdb(id, pw);
+create index idx_${db_}page on ${db_}page(id, version, hidden);
+create index idx_${db_}data on ${db_}data(id, version);
+create index idx_${db_}linkfrom on ${db_}link(linkfrom);
+create index idx_${db_}linkto on ${db_}link(linkto);
+create index idx_${db_}linktoname on ${db_}link(linktoname);
+create index idx_${db_}taggedlinkfrom on ${db_}taggedlink(linkfrom);
+create index idx_${db_}taggedlinkto on ${db_}taggedlink(linkto);

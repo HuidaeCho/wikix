@@ -6,6 +6,6 @@ if(invalid_access()){
 if(!$admin || is_locked($Pagename))
 	return;
 
-$query = "update page set locked=1 where name='$Pagename'";
+$query = "update ${db_}page set locked=1 where name='$Pagename'";
 $result = pm_query($db, $query);
 ?>

@@ -10,9 +10,9 @@ if(!is_site_locked()){
 	return;
 }
 
-$query = "update page set tag=0";
+$query = "update ${db_}page set tag=0";
 $result = pm_query($db, $query);
 
-$query = "delete from taggedlink";
+$query = "delete from ${db_}taggedlink";
 $result = pm_query($db, $query);
 ?>

@@ -35,7 +35,7 @@ if($wikiXauthor == "login:"){
 	}
 	$Password = md5($password);
 	opendb($db, $dbHost, $dbName, $dbUser, $dbPass);
-	$query = "select id from admindb where id='$author'";
+	$query = "select id from ${db_}admindb where id='$author'";
 	$result = pm_query($db, $query);
 	$r = pm_num_rows($result);
 	pm_free_result($result);
@@ -49,7 +49,7 @@ if($wikiXauthor == "login:"){
 	$sid = md5("$author:$password".
 				($uniqLogin?":$ip:".uniqid(rand(), 1):""));
 	$sid0 = md5($sid);
-	$query = "select pw from userdb where id='$author'";
+	$query = "select pw from ${db_}userdb where id='$author'";
 	$result = pm_query($db, $query);
 	if(($r0 = pm_num_rows($result)))
 		$r = pm_fetch_result($result, 0, 0);
@@ -62,7 +62,7 @@ if($wikiXauthor == "login:"){
 			echo "Invalid login!";
 			exit;
 		}
-		$query = "update userdb set mip='$ip', mtime='$now',
+		$query = "update ${db_}userdb set mip='$ip', mtime='$now',
 						sid='$sid0' where id='$author'";
 		$result = pm_query($db, $query);
 	}else{
@@ -73,7 +73,7 @@ if($wikiXauthor == "login:"){
 			echo "Invalid login!";
 			exit;
 		}
-		$query = "insert into userdb
+		$query = "insert into ${db_}userdb
 					(id, pw, sid, cip, ctime, mip, mtime)
 					values('$author', '$Password', '$sid0',
 					'$ip', '$now', '$ip', '$now')";

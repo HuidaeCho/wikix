@@ -35,7 +35,7 @@ if($wikiXauthor == "admin:"){
 	}
 	$Password = md5($password);
 	opendb($db, $dbHost, $dbName, $dbUser, $dbPass);
-	$query = "select pw from admindb where id='$author'";
+	$query = "select pw from ${db_}admindb where id='$author'";
 	$result = pm_query($db, $query);
 	$r = (pm_num_rows($result)&&$Password==pm_fetch_result($result, 0, 0)?
 									1:0);
@@ -49,7 +49,7 @@ if($wikiXauthor == "admin:"){
 	}
 	$sid = md5("$author:$password".
 				($uniqLogin?":$ip:".uniqid(rand(), 1):""));
-	$query = "update admindb set mip='$ip', mtime='$now',
+	$query = "update ${db_}admindb set mip='$ip', mtime='$now',
 					sid='".md5($sid)."' where id='$author'";
 	$result = pm_query($db, $query);
 	closedb($db);
@@ -62,7 +62,7 @@ if($moreAdmins && preg_match("/^admin:$adminAuthor:(.+)$/", $wikiXauthor, $m)){
 						$post['adminpassword']:"");
 
 	opendb($db, $dbHost, $dbName, $dbUser, $dbPass);
-	$query = "select sid from admindb where id='$adminAuthor'";
+	$query = "select sid from ${db_}admindb where id='$adminAuthor'";
 	$result = pm_query($db, $query);
 	$sid = pm_fetch_result($result, 0, 0);
 	pm_free_result($result);
@@ -75,13 +75,13 @@ if($moreAdmins && preg_match("/^admin:$adminAuthor:(.+)$/", $wikiXauthor, $m)){
 		exit;
 	}
 	if($adminauthor != "" && $adminauthor !== $adminAuthor){
-		$query = "select id from admindb where id='$adminauthor'";
+		$query = "select id from ${db_}admindb where id='$adminauthor'";
 		$result = pm_query($db, $query);
 		$r = pm_num_rows($result);
 		pm_free_result($result);
 		if($r){
 			if($adminpassword == ""){
-				$query = "delete from admindb
+				$query = "delete from ${db_}admindb
 						where id='$adminauthor'";
 				$result = pm_query($db, $query);
 				warn("Administrator <span class=\"general\">$adminauthor</span> removed.");
@@ -94,13 +94,13 @@ if($moreAdmins && preg_match("/^admin:$adminAuthor:(.+)$/", $wikiXauthor, $m)){
 		if($adminpassword == "")
 			warn("AdminPassword is empty.");
 		else{
-			$query = "insert into admindb (id, pw,
+			$query = "insert into ${db_}admindb (id, pw,
 						cip, ctime, mip, mtime)
 						values('$adminauthor',
 						'".md5($adminpassword)."',
 						'$ip', '$now', '$ip', '$now')";
 			$result = pm_query($db, $query);
-			$query = "delete from userdb where id='$adminauthor'";
+			$query = "delete from ${db_}userdb where id='$adminauthor'";
 			$result = pm_query($db, $query);
 			warn("New administrator <span class=\"general\">$adminauthor</span> added.");
 		}

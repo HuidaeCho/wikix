@@ -8,9 +8,9 @@ if(!$admin || $author !== $adminAuthor)
 
 if($v0 != "" || $v1 != ""){
 	if($v1 > 0)
-		$query = "update admindb set pw='' where id='$Pagename'";
+		$query = "update ${db_}admindb set pw='' where id='$Pagename'";
 	else
-		$query = "delete from admindb where id='$Pagename'";
+		$query = "delete from ${db_}admindb where id='$Pagename'";
 	$result = pm_query($db, $query);
 }
 

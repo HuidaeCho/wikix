@@ -12,7 +12,7 @@ $author = $ip;
 if($wikiXauthor != "" &&
 	preg_match("/^(login|admin):(.+):(.+)$/", $wikiXauthor, $m)){
 	opendb($db, $dbHost, $dbName, $dbUser, $dbPass);
-	$query = "select sid from ".($m[1]=="admin"?"admindb":"userdb").
+	$query = "select sid from ${db_}".($m[1]=="admin"?"admindb":"userdb").
 				" where id='$m[2]'";
 	$result = pm_query($db, $query);
 	$sid = pm_fetch_result($result, 0, 0);
