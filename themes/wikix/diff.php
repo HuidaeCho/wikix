@@ -18,6 +18,7 @@
 #$diff_method = "geni";
 $diff_method = "diff0";
 #$diff_method = "diff";
+$hdiff = 1;
 #$diff_method = "ext";
 
 switch($diff_method){
@@ -89,7 +90,7 @@ $m = $n = $s;
 $delta = lcs($line0, $line1, $l, $s, $e0, $e1);
 for($i=0; $i<$l; $i++,$m++,$n++){
 	list($x, $y) = explode(",", $delta[$i]);
-	if($x > $m && $y > $n){
+	if($hdiff && $x > $m && $y > $n){
 		for(; $m<$x&&$n<$y; $m++,$n++){
 			echo "<tr><td class=\"diff_modified\"><tt>* ";
 			$l0 = str2charray($line0[$m], $nl0);
@@ -144,7 +145,7 @@ $m = $n = 0;
 $delta = lcs($line0, $line1, $l);
 for($i=0; $i<$l; $i++,$m++,$n++){
 	list($x, $y) = explode(",", $delta[$i]);
-	if($x > $m && $y > $n){
+	if($hdiff && $x > $m && $y > $n){
 		for(; $m<$x&&$n<$y; $m++,$n++){
 			echo "<tr><td class=\"diff_modified\"><tt>* ";
 			$l0 = str2charray($line0[$m], $nl0);
