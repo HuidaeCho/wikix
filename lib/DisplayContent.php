@@ -3946,27 +3946,29 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 (pageid($data['author'])?
 "<a class=\"a\" href=\"index.php?display=$iauthor\">$data[author]</a>":$data['author']).
 " ... <small class=\"small\">".($login?"<a class=\"a\" href=\"index.php?$bmtime,bookmark=$pageName\"><span class=\"$bclass\">":"").$mdate.($login?"</span></a>":"")." <a class=\"a\" href=\"index.php?diff=$ipageName\"><span class=\"$bclass\">$mtime</span></a></small>").
-"</li>\n".
-"<ul class=\"pagelist_highlighted\">\n";
+"\n<ul class=\"pagelist_highlighted\">\n";
 		
 		$content = page_content($data['id'], "${db_}page.version");
-		$splited = explode("\x00", preg_replace("/$pattern/", "\x00\\0\x00", $content));
-		$nsplited = count($splited) - 1;
+		$splitted = explode("\x00", preg_replace("/$pattern/",
+					"\x00\\0\x00", $content));
+		$nsplitted = count($splitted) - 1;
 		$pstart = $pdone = 0;
-		for($j=0;$j<$nsplited;$j+=2){
-			$pstart = $pdone + strlen($splited[$j]);
-			$pdone = $pstart + strlen($splited[$j+1]);
+		for($j=0;$j<$nsplitted;$j+=2){
+			$pstart = $pdone + strlen($splitted[$j]);
+			$pdone = $pstart + strlen($splitted[$j+1]);
 			
 			$str .= "<li><span class=\"beforequery\">".
-				strright(substr($content, 0, $pstart), $_extra).
+				geni_specialchars0(strright(
+					substr($content, 0, $pstart), $_extra)).
 				"</span><span class=\"query\">".
-				$splited[$j+1].
+				$splitted[$j+1].
 				"</span><span class=\"afterquery\">".
-				strleft(substr($content, $pdone), $_extra).
+				geni_specialchars0(strleft(
+					substr($content, $pdone), $_extra)).
 				"</li>\n";
 		}
 		
-		$str .= "</ul>\n";
+		$str .= "</ul>\n</li>\n";
 	}
 	pm_free_result($result);
 	$str .= ($mode==2?"</ul>":"</ol>");
