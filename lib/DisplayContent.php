@@ -2954,7 +2954,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 					$r .=
 "<table class=\"pagelist\">\n".($mode?$tag1:
 "<tr class=\"pagelist_header\">".
-"<td>&nbsp;<span class=\"table_header\">Page</span>".(!$ninfos||$ninfos>$nr?" ($nr page".($nr>1?"s":"").")":"")."&nbsp;</td>".
+"<td>&nbsp;<span class=\"table_header\">Page</span> ($nr page".($nr>1?"s":"").")&nbsp;</td>".
 "<td align=\"right\">&nbsp;<span class=\"table_header\">To</span>&nbsp;</td>".
 "</tr>\n");
 				}
