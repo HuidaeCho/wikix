@@ -29,7 +29,7 @@ $query = "select page.name from link, page
 $result = pm_query($db, $query);
 $nlinks = pm_num_rows($result);
 
-$LinksTo = ($nlinks?$nlinks:"No")." Link".($nlinks>1?"s":"")." to ";
+$LinksTo = ($nlinks?$nlinks:"No")." Link".($nlinks>1?"s":"")." to";
 
 include_once("$mytheme/links2.php");
 ?>

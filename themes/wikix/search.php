@@ -1,7 +1,6 @@
-<h1 class="title"><a accesskey="z" class="general" href="index.php?display=SearchPages">
-SearchPages: <?=$pagename?>
-</a></h1>
+<h1 class="title"><a accesskey="z" class="general" href="index.php?display=SearchPages">SearchPages</a></h1>
 
+<tt class="title"><?=$pagename?></tt><br />
 <?=
 ($tc&0x1?"Title":"").(($tc&0x3)==0x3?($tc&0x4?"|":"&"):"").
 ($tc&0x2?"Content":"")." / ".

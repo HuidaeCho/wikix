@@ -53,7 +53,9 @@ if(!isset($post['subaction']) || $post['subaction'] != "upload"){
 
 	$n = count($files['file']['tmp_name']);
 	$str = "";
-	$first = 1;
+	$once = 1;
+	opendb($db, $dbHost, $dbName, $dbUser, $dbPass);
+	$Pagename = addslashes($p);
 	for($i=0; $i<$n; $i++){
 		if(!is_uploaded_file($files['file']['tmp_name'][$i]))
 			continue;
@@ -64,7 +66,7 @@ if(!isset($post['subaction']) || $post['subaction'] != "upload"){
 			echo "<span class=\"emphasized\">$fname: Rejected for a security reason.</span><br />\n";
 			continue;
 		}
-		if($first){
+		if($once){
 			if(!file_exists($dir)){
 				$subdir = explode("/", $p);
 				$path = $rootdir;
@@ -81,7 +83,8 @@ if(!isset($post['subaction']) || $post['subaction'] != "upload"){
 				$dir = $rootdir."0";
 				$fileP = "wikix/file0";
 			}
-			$first = 0;
+			$d = preg_replace("\x01^$wikiXdir/\x01", "", $dir);
+			$once = 0;
 		}
 		$ifile = $fname;
 		for($j=1; file_exists("$dir/$ifile"); $j++,$ifile="$j::$fname");
@@ -89,11 +92,15 @@ if(!isset($post['subaction']) || $post['subaction'] != "upload"){
 								"$dir/$ifile"))
 			continue;
 		chmod("$dir/$ifile", 0644);
+
+		add_file("$d/$ifile");
+
 		$jfile = geni_urlencode($ifile);
 		$ifile = str_replace("\x03", "\\\\",
 				geni_specialchars0(escape_wikix($ifile)));
 		$str .= "[$ifile|http://$fileP/$jfile]\n";
 	}
+	closedb($db);
 	echo "<pre>\n$str</pre>\n";
 }
 ?>

@@ -40,7 +40,6 @@ if($data['content'] == "\x01")
 	$data['content'] = "";
 
 /******************************************************************************/
-$EditRedirectedPage = "";
 if(preg_match("/^\\\\RedirectTo:([^\r\n]+)/", $data['content'], $m)){
 	switch(redirect_to($pagename0, $data['content'],
 				1, $EditRedirectedPage)){

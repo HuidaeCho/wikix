@@ -1,10 +1,12 @@
 <?
 function opendb(&$db, $dbhost, $dbname, $dbuser, $dbpass){
-	$db = pm_connect($dbhost, $dbname, $dbuser, $dbpass) or die("Database open failed.");
+	$db = pm_connect($dbhost, $dbname, $dbuser, $dbpass) or
+		die("Database open failed.");
 }
 
-function closedb($db){
+function closedb(&$db){
 	pm_close($db) or die("Database close failed.");
+	$db = 0;
 }
 
 function pageid0($Pagename){
@@ -41,6 +43,170 @@ function pagename($pageid){
 	$ret = "";
 	if(pm_num_rows($result))
 		$ret = pm_fetch_result($result, 0, 0);
+	pm_free_result($result);
+	return $ret;
+}
+
+function add_file($file){
+	global	$db, $Pagename, $author, $ip;
+	static	$once = 1, $v;
+
+	if($once){
+		$v = 0;
+		if(($pageid = pageid($Pagename))){
+			$query = "select version from page where id=$pageid";
+			$result = pm_query($db, $query);
+			$v = pm_fetch_result($result, 0, 0);
+			pm_free_result($result);
+		}
+		$once = 0;
+	}
+	$i = 1;
+	$query = "select max(id) from file";
+	$result = pm_query($db, $query);
+	if(pm_num_rows($result))
+		$i = pm_fetch_result($result, 0, 0) + 1;
+	pm_free_result($result);
+
+	$f = addslashes($file);
+	$m = date("Y-m-d H:i:s");
+	$query = "insert into file (id, file, page, version, author, ip, mtime)
+		values($i, '$f', '$Pagename', $v, '$author', '$ip', '$m')";
+	$result = pm_query($db, $query);
+}
+
+function uploadedfiles($Pagename, $table = 0){
+	global	$db, $admin, $login, $author, $wikiXdir, $caseinsensitiveSearch;
+
+	if(!$admin &&
+	   (($Pagename != "" && is_hidden($Pagename)) || is_site_hidden()))
+		return "";
+
+	$query = "select ".($Pagename==""?"page, ":"").
+		"id, file, author, ip, mtime, version from file ".
+		($Pagename==""?"":"where page='$Pagename' ").
+		"order by page, file";
+	$result = pm_query($db, $query);
+	$p = "";
+	$hidden = 0;
+	$locked = 0;
+	if($Pagename != ""){
+		$pageName = geni_urlencode(stripslashes($Pagename));
+		$locked = is_locked($Pagename);
+	}
+	$opened = 0;
+	if($table){
+		$tag = "table class=\"pagelist\"";
+		$tag0 = "table";
+	}else
+		$tag = $tag0 = "ol";
+	$n = pm_num_rows($result);
+	$ret = "";
+	if($n)
+		$ret .= ($table&&$Pagename!=""?"<$tag>\n":"<ol>\n");
+	for($i=0,$j=0; $i<$n; $i++){
+		$data = pm_fetch_array($result, $i);
+		$deleted = 0;
+		if(!file_exists("$wikiXdir/$data[file]")){
+			$query = "delete from file where id=$data[id]";
+			$result0 = pm_query($db, $query);
+
+			$d = dirname($data['file']);
+			while($d != "" && $d != "file" && $d != "file0" &&
+				rmdir("$wikiXdir/$d"))
+				$d = dirname($d);
+			$deleted = 1;
+		}
+		if($Pagename == ""){
+			if($p != $data['page']){
+				if($opened){
+					$ret .= "</$tag0>\n</li>\n";
+					$opened = 0;
+				}
+				$p = $data['page'];
+				$iPagename = addslashes($p);
+				$ipagename = geni_specialchars($p);
+				$ipageName = geni_urlencode($p);
+				$hidden = is_hidden($iPagename);
+				if($hidden && !$admin)
+					continue;
+				$locked = is_locked($iPagename);
+				if(pageid($iPagename))
+					$ret .= "<li><a class=\"wikiword_display\" href=\"index.php?display=$ipageName\">$ipagename</a>";
+				else{
+					$w = split_word($p);
+					$w[0] = geni_specialchars($w[0]);
+					$w[1] = geni_specialchars($w[1]);
+					$ret .= "<li><a class=\"wikiword_goto\" href=\"index.php?goto=$ipageName\">$w[0]</a>$w[1] <span class=\"emphasized\">".(pageid0($iPagename)?"deleted":"nonexistent")."</span>";
+				}
+				$ret .= " ... <small class=\"small\">".($locked?"L":"").($hidden?"<span class=\"emphasized\">H</span>":"").($locked||$hidden?" ":"")."<a class=\"a\" href=\"index.php?files=$ipageName\">files</a></small>\n<$tag>\n";
+				$j = 0;
+				$opened = 1;
+			}else
+			if($hidden && !$admin)
+				continue;
+		}
+		$filename = geni_specialchars($data['file']);
+		$fileName = geni_urlencode($data['file']);
+		$filesize = filesize($data['file']);
+		$s = number_format($filesize);
+		$size = "$s byte".($filesize>1?"s":"");
+		$fn = geni_urlencode($fileName);
+		$f = str_replace("%26", "%5Cx26",
+			str_replace("%7C", "%5Cx7c",
+			str_replace("%28", "%5Cx28",
+			str_replace("%29", "%5Cx29",
+			str_replace("%5C", "%5Cx5c", $fileName)))));
+		$search = "$fn".($fn!=$f?" | $f/":"/").
+			($caseinsensitiveSearch?"i":"");
+		$fN = basename($fileName);
+		$fn = geni_urlencode($fN);
+		$f = str_replace("%26", "%5Cx26",
+			str_replace("%7C", "%5Cx7c",
+			str_replace("%28", "%5Cx28",
+			str_replace("%29", "%5Cx29",
+			str_replace("%5C", "%5Cx5c", $fN)))));
+		$search2 = "$fn".($fn!=$f?" | $f/":"/").
+			($caseinsensitiveSearch?"i":"");
+		if($table){
+			if(!$j++)
+				$ret .=
+"<tr class=\"pagelist_header\">".
+"<td align=\"right\">&nbsp;<span class=\"table_header\">Id</span>&nbsp;</td>".
+"<td>&nbsp;<span class=\"table_header\">File</span>&nbsp;</td>".
+"<td align=\"right\">&nbsp;<span class=\"table_header\">Size</span>&nbsp;</td>".
+"<td>&nbsp;<span class=\"table_header\">Uploaded Time</span>&nbsp;</td>".
+"<td>&nbsp;<span class=\"table_header\">Author</span>&nbsp;</td>".
+"<td>&nbsp;<span class=\"table_header\">Search</span>&nbsp;</td>".
+"<td>&nbsp;<span class=\"table_header\">Delete</span>&nbsp;</td>".
+"</tr>\n";
+			$ret .=
+"<tr>".
+"<td align=\"right\">&nbsp;$data[id]&nbsp;</td>".
+"<td>&nbsp;<a class=\"a\" href=\"$fileName\">$filename</a>&nbsp;</td>".
+"<td align=\"right\">&nbsp;$s&nbsp;</td>".
+"<td>&nbsp;<a class=\"general\" title=\"v$data[version]\">$data[mtime]</a>&nbsp;</td>".
+"<td>&nbsp;<a ".(pageid($data['author'])?"class=\"a\" href=\"index.php?display=".geni_urlencode($data['author'])."\"":"class=\"general\"")." title=\"$data[ip]\">$data[author]</a>&nbsp;</td>".
+"<td>&nbsp;<a class=\"a\" href=\"index.php?search=$search\">search</a> <a class=\"a\" href=\"index.php?search=$search2\">search2</a>&nbsp;</td>".
+"<td>&nbsp;".($deleted?"<span class=\"emphasized\">deleted!</span>":($admin||($login&&$author==$data['author']&&!$locked)?"<a class=\"a\" href=\"index.php?$data[id],files=".($Pagename==""?"%02":$pageName)."\">delete</a>":"delete"))."&nbsp;</td>".
+"</tr>\n";
+		}else
+			$ret .=
+"<li><a class=\"a\" href=\"$fileName\" ".
+"title=\"$size $data[mtime] v$data[version]:$data[author]\">$filename</a>".
+" ... <small class=\"small\">".
+"<a class=\"a\" href=\"index.php?search=$search\">search</a> ".
+"<a class=\"a\" href=\"index.php?search=$search2\">search2</a>".
+($deleted?" <span class=\"emphasized\">deleted!</span>":
+($admin||($login&&$author==$data['author']&&!$locked)?
+" <a class=\"a\" href=\"index.php?$data[id],files=".
+($Pagename==""?"%02":$pageName)."\">delete</a>":"")).
+"</small></li>\n";
+	}
+	if($n)
+		$ret .= ($opened?"</$tag0>\n</li>\n":"").
+			($table&&$Pagename!=""?"</table>\n":"</ol>\n");
+	$ret = str_replace("\\", "\x03", $ret);
 	pm_free_result($result);
 	return $ret;
 }

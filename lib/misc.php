@@ -451,6 +451,13 @@ function mafi($str, $mode = 0){
 	$str = ob_get_contents();
 	ob_end_clean();
 
+	if($n){
+		for($i=0; $i<$n; $i++){
+			if(is_file("$wikiXdir/".$m[1][$i]))
+				add_file($m[1][$i]);
+		}
+	}
+
 	if($mode)
 		$str = geni_specialchars($str);
 	$str = str_replace("\\\\", "\x03", $str);
@@ -507,6 +514,9 @@ function tex($res, $file, $str, $opt, $tex = "tex"){
 	$path[rm] -f $fname $fname.*;
 	");
 
+	if(is_file("$wikiXdir/$file"))
+		add_file($file);
+
 	return "";
 }
 
@@ -527,12 +537,10 @@ function gnuplot($file, $str, $opt){
 	$str = str_replace('\\\\"', '\\\\\\"', $str);
 	$pattern = array(
 		'/(?:^|[\n;])[ \t]*!/',
-		'/(?:^|[\n;])[ \t]*shell[^a-zA-Z]/',
-		'/(?:^|[\n;])[ \t]*call[^a-zA-Z]/',
-		'/(?:^|[\n;])[ \t]*load[^a-zA-Z]/',
+		'/(?:^|[\n;])[ \t]*(?:shell|call|load)[^a-zA-Z]/',
+		'/(?:^|[\n;])[ \t]*set[ \t](?:terminal|output)[^a-zA-Z]/',
 	);
 	$replace = array(
-		'#',
 		'#',
 		'#',
 		'#',
@@ -558,6 +566,9 @@ function gnuplot($file, $str, $opt){
 		echo \"$str\" | $path[gnuplot];
 		");
 	}
+
+	if(is_file("$wikiXdir/$file"))
+		add_file($file);
 
 	return "";
 }

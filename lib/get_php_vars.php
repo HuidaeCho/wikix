@@ -59,4 +59,5 @@ $referer = (isset($server['HTTP_REFERER'])?$server['HTTP_REFERER']:"-");
 
 $aid = "wikiXauthor4$scriptdir";
 $wikiXauthor = (isset($cookie[$aid])?$cookie[$aid]:"");
+$aval = "$scriptdir/";
 ?>

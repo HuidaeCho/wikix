@@ -14,7 +14,6 @@ $content = $pagename0;
 /******************************************************************************/
 if(preg_match("/^\\\\RedirectTo:([^\r\n]+)/", $content, $m)){
 	$pagename0 = "\x02";
-	$EditRedirectedPage = "";
 	switch(redirect_to($pagename0, $content, 1, $EditRedirectedPage)){
 	case 0:
 		$v0 = $v1 = "";

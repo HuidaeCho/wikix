@@ -73,7 +73,7 @@ if(isset($post['author']) && isset($post['password']) &&
 }
 
 $login = ($author===$ip?0:1);
-$aval = ($login?"$scriptdir/$author":"");
+$aval .= ($login?$author:"");
 $wikiXonlybody = (isset($cookie["wikiXonlybody4$aval"])?
 					$cookie["wikiXonlybody4$aval"]:0);
 
@@ -125,14 +125,14 @@ if(strpos($arg, "\x01") !== false){
 }
 
 $useraction = array("display", "doit", "search", "bookmark", "links1", "links2",
-		"goto", "edit", "delete", "undelete", "info", "diff");
+		"goto", "edit", "delete", "undelete", "info", "diff", "files");
 
 if(preg_match("/^(?:([0-9]+),(?:([0-9]+),)?)?(:?:?)(".
 	"display|doit|search|bookmark|links1|links2|goto|".
-	"edit|delete|undelete|info|diff|".
+	"edit|delete|undelete|info|diff|files|".
 	"lock|unlock|hide|unhide|remove|tag|untag|".
 	"locksite|unlocksite|hidesite|unhidesite|cleansite|".
-	"tagsite|untagsite|recoversite|updateuser|updateadmin".
+	"tagsite|untagsite|recoversite|updateuser|updateadmin|".
 	")=(.*)$/s", $arg, $argv)){
 	$v0 = $argv[1];
 	$v1 = $argv[2];
@@ -212,6 +212,7 @@ case "display":
 	break;
 }
 
+$EditRedirectedPage = "";
 $npages = npages();
 $btime = btime();
 

@@ -4,7 +4,7 @@ include_once("mywikix/config.php");
 include_once("lib/misc.php");
 include_once("lib/get_php_vars.php");
 
-$aval = (preg_match("/^.+:(.+):.+$/", $wikiXauthor, $m)?"$scriptdir/$m[1]":"");
+$aval .= (preg_match("/^.+:(.+):.+$/", $wikiXauthor, $m)?$m[1]:"");
 if($referer == "-")
 	$referer = "index.php";
 if($arg == "?"){

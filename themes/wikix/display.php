@@ -1,5 +1,4 @@
-<?
-if(!$wikiXonlybody){
+<?if(!$wikiXonlybody){
 	if($admin){
 		include_once("$mytheme/adminmenu.php");
 	}
@@ -24,18 +23,13 @@ document.forms.search.elements.search.focus();
 <?=$EditRedirectedPage?>
 <?}?>
 
-<form action="index.php" method="get">
-<h1 class="title"><a accesskey="z" class="general" href="index.php?<?=$title_action?>">
-<?=$pagename?>
-</a><a href="index.php?<?=
-($action=="display"?"::":"")."display=$pageName"?>">&nbsp;</a></h1>
+<h1 class="title"><a accesskey="z" class="general" href="index.php?<?=$title_action?>"><?=$pagename?></a><a href="index.php?<?=($action=="display"?"::":"")."display=$pageName"?>">&nbsp;</a></h1>
 
 <?
 include_once("mywikix/header.php");
 $link = DisplayContent("$wikiXheader$data[content]$wikiXfooter");
 include_once("mywikix/footer.php");
 ?>
-</form>
 
 <?if(!$wikiXonlybody){?>
 <hr noshade />
@@ -47,6 +41,8 @@ include_once("mywikix/footer.php");
 <a accesskey="x" href="index.php?<?=$edit_action?>"><?=($view?"ViewSource":"EditPage")?></a> |
 <a href="index.php?info=<?=$pageName?>">info</a> |
 <?=$diff_do?> |
+<a href="index.php?files=<?=$pageName?>">files</a><?=
+($pagename0==$wikiXfrontpage0?"<a href=\"index.php?files=%02\">*</a>":"")?> |
 GoTo <input accesskey="c" type="text" name="goto" size="<?=$gotoSize?>" />
 <br />
 <i>

@@ -1,6 +1,4 @@
-<h1 class="title"><a accesskey="z" class="general" href="index.php?<?=$title_action?>">
-<?=$pagename?>
-</a></h1>
+<h1 class="title"><a accesskey="z" class="general" href="index.php?<?=$title_action?>"><?=$pagename?></a></h1>
 
 <?
 if($subaction == "Preview"){
@@ -59,7 +57,9 @@ document.forms.edit.elements.content.focus();
 <a accesskey="x" href="index.php?<?=$view_action?>"><?=($id?"ViewPage":"LinksTo")?></a>
 <?if($edit){?>
 | <a href="index.php?info=<?=$pageName?>">info</a>
-<?=($diff_do==""?"":" | $diff_do")?>
+<?=($diff_do==""?"":" | $diff_do")?> |
+<a href="index.php?files=<?=$pageName?>">files</a><?=
+($pagename0==$wikiXfrontpage0?"<a href=\"index.php?files=%02\">*</a>":"")?>
 <br />
 <i>
 <?="$data[mtime] v$data[version]:$author_do"?>
@@ -67,6 +67,9 @@ document.forms.edit.elements.content.focus();
 <br />
 <?="$data[hits] $hits"?>
 </i>
+<?}else{?>
+| <a href="index.php?files=<?=$pageName?>">files</a><?=
+($pagename0==$wikiXfrontpage0?"<a href=\"index.php?files=%02\">*</a>":"")?>
 <?}?>
 
 </td><td align="right">

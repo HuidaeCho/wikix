@@ -170,6 +170,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"'(\\\\RandomPagesFrom\{.*?(?<!\\\\)\})'e",
 		"'(\\\\RandomPageTo\{.*?(?<!\\\\)\})'e",
 		"'(\\\\RandomPageFrom\{.*?(?<!\\\\)\})'e",
+		"'(\\\\UploadedFiles\{.*?(?<!\\\\)\})'e",
 		"'(\\\\LinkUp\{.*?(?<!\\\\)\})'e",
 		"'(\\\\LinkDown\{.*?(?<!\\\\)\})'e",
 		"'(\\\\Calendar@?\*?\{.*?(?<!\\\\)\}\{.*?(?<!\\\\)\})'e",
@@ -237,6 +238,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"[\\1]",
 		"\x05 \x06",
 		"\x10\\1\x11",
+		"str_replace('\x10', '', str_replace('\x11', '', '\\1'))",
 		"str_replace('\x10', '', str_replace('\x11', '', '\\1'))",
 		"str_replace('\x10', '', str_replace('\x11', '', '\\1'))",
 		"str_replace('\x10', '', str_replace('\x11', '', '\\1'))",
@@ -1871,7 +1873,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$size = $m[1][$i];
 			if($size == "")
 				$size = 30;
-			$r = "<input name=\"search\" class=\"text\" type=\"text\" size=\"$size\">";
+			$r = "<form action=\"index.php\" method=\"get\" style=\"display:inline;\"><input name=\"search\" class=\"text\" type=\"text\" size=\"$size\"></form>";
 			$str = preg_replace("/\\\\SearchPages".$m[1][$i]."(?![0-9a-zA-Z])/", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
@@ -1887,15 +1889,9 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$size = $m[1][$i];
 			if($size == "")
 				$size = 30;
-			$r = "<input name=\"goto\" class=\"text\" type=\"text\" size=\"$size\">";
+			$r = "<form action=\"index.php\" method=\"get\" style=\"display:inline;\"><input name=\"goto\" class=\"text\" type=\"text\" size=\"$size\"></form>";
 			$str = preg_replace("/\\\\GoTo".$m[1][$i]."(?![0-9a-zA-Z])/", $r, $str);
 		}
-		if(strpos($str, "\\") === false)
-			return $str;
-	}
-	if(preg_match("/\\\\DoIt(?![a-zA-Z])/", $str, $m)){
-		$r = "<input class=\"submit\" type=\"submit\" value=\"DoIt\">";
-		$str = preg_replace("/\\\\DoIt(?![0-9a-zA-Z])/", $r, $str);
 		if(strpos($str, "\\") === false)
 			return $str;
 	}
@@ -2746,7 +2742,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$ninfos = $_m[2];
 			}
 			$r = pagelist($query, $start, $ninfos, $porder);
-			$str = preg_replace("/\\\\OrphanedPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])/", $r, $str);
+			$str = preg_replace("\x01\\\\OrphanedPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
 			return $str;
@@ -2897,7 +2893,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 					$r .= "$tag4</table>";
 				}
 			}
-			$str = preg_replace("/\\\\WantedPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])/", str_replace("\\", "\x03", $r), $str);
+			$str = preg_replace("\x01\\\\WantedPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", str_replace("\\", "\x03", $r), $str);
 		}
 		pm_free_result($result);
 		if(strpos($str, "\\") === false)
@@ -3080,7 +3076,7 @@ function plugin($str, $DisplayPool, &$displaypool){
 					$r .= "$tag4</table>";
 				}
 			}
-			$str = preg_replace("/\\\\AllAuthors".preg_quote($m[1][$i])."(?![0-9a-zA-Z])/", $r, $str);
+			$str = preg_replace("\x01\\\\AllAuthors".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		pm_free_result($result);
 		if(strpos($str, "\\") === false)
@@ -3257,9 +3253,25 @@ function plugin($str, $DisplayPool, &$displaypool){
 					$r .= "$tag4</table>";
 				}
 			}
-			$str = preg_replace("/\\\\AllAdmins".preg_quote($m[1][$i])."(?![0-9a-zA-Z])/", $r, $str);
+			$str = preg_replace("\x01\\\\AllAdmins".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		pm_free_result($result);
+		}
+		if(strpos($str, "\\") === false)
+			return $str;
+	}
+	if(($n = preg_match_all("/\\\\UploadedFiles((?:\{.*?(?<!\\\\)\})?)(?![a-zA-Z])/", $str, $m))){
+		if($n > 1){
+			$m[1] = array_values(array_unique($m[1]));
+			$n = count($m[1]);
+		}
+		for($i=0; $i<$n; $i++){
+			$ipagename = $pagename0;
+			if(preg_match("/^\{(.*)(?<!\\\\)\}$/", $m[1][$i], $_m))
+				$ipagename = clean4plugin($_m[1]);
+			$iPagename = addslashes($ipagename);
+			$r = uploadedfiles($iPagename);
+			$str = preg_replace("\x01\\\\UploadedFiles".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
 			return $str;
@@ -3272,12 +3284,13 @@ function plugin($str, $DisplayPool, &$displaypool){
 		for($i=0; $i<$n; $i++){
 			$ipagename = $pagename0;
 			$depth = 10;
-			if(preg_match("/^(?:\{(.*)(?<!\\\\)\})?([0-9]*)$/", $m[1][$i], $_m)){
-				if($_m[1] != "")
-					$ipagename = clean4plugin($_m[1]);
-				if($_m[2])
-					$depth = $_m[2];
+			$ninfos = $m[1][$i];
+			if(preg_match("/^\{(.*)(?<!\\\\)\}(.*)$/", $ninfos, $_m)){
+				$ipagename = clean4plugin($_m[1]);
+				$ninfos = $_m[2];
 			}
+			if(preg_match("/^([0-9]+)$/", $ninfos, $_m))
+				$depth = $_m[1];
 			$iPagename = addslashes($ipagename);
 			$LinkPool = array();
 			$r = "<ol class=\"linkup\">\n".linkup($iPagename, $depth, $depth)."</ol>";
@@ -3294,12 +3307,13 @@ function plugin($str, $DisplayPool, &$displaypool){
 		for($i=0; $i<$n; $i++){
 			$ipagename = $pagename0;
 			$depth = 10;
-			if(preg_match("/^(?:\{(.*)(?<!\\\\)\})?([0-9]*)$/", $m[1][$i], $_m)){
-				if($_m[1] != "")
-					$ipagename = clean4plugin($_m[1]);
-				if($_m[2])
-					$depth = $_m[2];
+			$ninfos = $m[1][$i];
+			if(preg_match("/^\{(.*)(?<!\\\\)\}(.*)$/", $ninfos, $_m)){
+				$ipagename = clean4plugin($_m[1]);
+				$ninfos = $_m[2];
 			}
+			if(preg_match("/^([0-9]+)$/", $ninfos, $_m))
+				$depth = $_m[1];
 			$iPagename = addslashes($ipagename);
 			$LinkPool = array();
 			$r = "<ol class=\"linkdown\">\n".linkdown($iPagename, $depth, $depth)."</ol>";

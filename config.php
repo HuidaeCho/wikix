@@ -1,5 +1,5 @@
 <?
-$wikiXversion = "v1.1.5";
+$wikiXversion = "v1.1.6";
 
 $wikiXlogo = "<b>wikiX $wikiXversion</b>";
 $wikiXpages = "wikiXpages";
@@ -59,5 +59,6 @@ $wikiXfooter = fread($fp, filesize($wikiXfooterFile));
 fclose($fp);
 ################################################################################
 
+$db = 0;
 srand((double)microtime()*1000000);
 ?>

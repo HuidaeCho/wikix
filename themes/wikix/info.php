@@ -1,6 +1,4 @@
-<h1 class="title"><a accesskey="z" class="general" href="index.php?display=<?=$pageName?>">
-info of <?=$pagename?>
-</a></h1>
+<h1 class="title"><a accesskey="z" class="general" href="index.php?display=<?=$pageName?>">info of <?=$pagename?></a></h1>
 
 <p><b>
 <?

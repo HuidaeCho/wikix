@@ -1,6 +1,4 @@
-<?
-if(!$wikiXonlybody){
-?>
+<?if(!$wikiXonlybody){?>
 
 <form name="search" action="index.php" method="get">
 <a tabindex="2" class="wikiword_display" href="index.php?display=AllPages">AllPages</a> |
@@ -18,15 +16,13 @@ document.forms.search.elements.search.focus();
 </script>
 */?>
 
-<?=$EditRedirectedPage?>
 <?}?>
 
-<form action="index.php" method="get">
 <?if($v0){?>
-<h1 class="title"><a accesskey="z" class="general" href="index.php">
+<tt class="title"><a accesskey="z" class="general" href="index.php">
 <?=$pagename?>
-</a><a href="index.php?1,<?=
-($action=="doit"?"::":"")."doit=$pageName"?>">&nbsp;</a></h1>
+</a></tt><a href="index.php?1,<?=
+($action=="doit"?"::":"")."doit=$pageName"?>">&nbsp;</a>
 <?}?>
 
 <?
@@ -34,7 +30,6 @@ include_once("mywikix/header.php");
 DisplayContent("$wikiXheader$content$wikiXfooter");
 include_once("mywikix/footer.php");
 ?>
-</form>
 
 <?if(!$wikiXonlybody){?>
 <hr noshade />

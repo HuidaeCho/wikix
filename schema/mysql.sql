@@ -5,6 +5,7 @@ drop table if exists page;
 drop table if exists data;
 drop table if exists link;
 drop table if exists taggedlink;
+drop table if exists file;
 
 create table admindb(
 	id varchar(100) binary primary key,
@@ -69,6 +70,17 @@ create table taggedlink(
 	linktoname tinyblob
 );
 
+create table file(
+	id int unique,
+	file tinyblob not null,
+	page tinyblob not null,
+	version int,
+	author varchar(100) binary,
+	ip varchar(20),
+	mtime varchar(25),
+	primary key(page(245), file(255))
+);
+
 grant all on admindb to nobody;
 grant all on userdb to nobody;
 grant all on site to nobody;
@@ -76,3 +88,4 @@ grant all on page to nobody;
 grant all on data to nobody;
 grant all on link to nobody;
 grant all on taggedlink to nobody;
+grant all on file to nobody;

@@ -127,19 +127,16 @@ if($subaction == "Save"){
 	$content = mystage0s($content);
 	$content = preg_replace("/^(\\\\basis\n.*?\n\\\\easis)$/mse",
 			"str_replace('$bs$bs', '\x02',
-			str_replace('$bs\"', '\"',
-			'\\1'))", $content);
+			str_replace('$bs\"', '\"', '\\1'))", $content);
 	$content = preg_replace("/^(\\\\bnobs\n.*?\n\\\\enobs)$/mse",
 			"str_replace('$bs$bs', '\x02',
-			str_replace('$bs\"', '\"',
-			'\\1'))", $content);
+			str_replace('$bs\"', '\"', '\\1'))", $content);
 	$content = str_replace("\\\\", "\x03", $content);
 	$content = str_replace("\\x09", "\x09", $content);
 
 	$content = preg_replace("/\\\\\{(.*?)\\\\\}/se",
 			"'$bs{'.str_replace('\n', '\x08',
-				str_replace('$bs\"', '\"', '\\1')).'$bs}'",
-			$content);
+			str_replace('$bs\"', '\"', '\\1')).'$bs}'", $content);
 	$content = smacro($content);
 	$content = str_replace("\x08", "\n", $content);
 
@@ -257,8 +254,7 @@ if($subaction == "Save"){
 
 	$content = addslashes($content);
 	$query = "insert into data (id, version, author, ip, mtime, content)
-				values($id, $version,
-				'$author', '$ip', '$now', '$content')";
+		values($id, $version, '$author', '$ip', '$now', '$content')";
 	$result0 = pm_query($db, $query);
 
 	$id0 = $id;

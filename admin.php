@@ -17,7 +17,6 @@ $password = (isset($post['password'])?$post['password']:"");
 if(!preg_match("/^admin:/", $wikiXauthor) ||
 		!preg_match("'^http://$host$script'", $referer)){
 	setcookie($aid, "admin:");
-	$aval = "";
 	include_once("lib/get_mythemeNcss.php");
 	$action = "admin";
 	include_once("mywikix/header0.php");
