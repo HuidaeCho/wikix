@@ -81,7 +81,8 @@ function add_file($file){
 }
 
 function uploadedfiles($Pagename, $table = 0){
-	global	$db, $db_, $admin, $login, $author, $wikiXdir, $caseinsensitiveSearch;
+	global	$db, $db_, $admin, $login, $author, $wikiXdir,
+		$caseinsensitiveSearch;
 
 	if(!$admin &&
 	   (($Pagename != "" && is_hidden($Pagename)) || is_site_hidden()))
@@ -395,7 +396,7 @@ function include_page($pagename0, $content, $allowed = 0){
 
 	if($action != "doit")
 		$IncludePool[] = $pagename0;
-	if(($n = preg_match_all("/^\\\\IncludePage:(.+)$/m", $content, $m))){
+	if(($n = preg_match_all("/^\\\\IncludePage:([^\r\n]+)/m",$content,$m))){
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
 			$n = count($m[1]);
