@@ -87,6 +87,9 @@ $v1 = "";
 $action = "display";
 $pagename0 = $wikiXfrontpage0;
 
+$wikiXheader = include_page("", $wikiXheader);
+$wikiXfooter = include_page("", $wikiXfooter);
+
 if(strpos($arg, "\x01") !== false){
 	$arg = "";
 	if(isset($get['v0']) && $get['v0'] != "")
@@ -211,9 +214,6 @@ case "display":
 		$action = "info";
 	break;
 }
-
-$wikiXheader = include_page($pagename0, $wikiXheader);
-$wikiXfooter = include_page($pagename0, $wikiXfooter);
 
 $EditRedirectedPage = "";
 $npages = npages();
