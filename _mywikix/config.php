@@ -77,6 +77,9 @@ $path = array(
 );
 ################################################################################
 
+# Set your timezone other than that of the server.
+#putenv("TZ=");
+
 /******************************************************************************
 $script = (isset($_SERVER)?$_SERVER['PHP_SELF']:$HTTP_SERVER_VARS['PHP_SELF']);
 $sub = basename(dirname($script));

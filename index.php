@@ -1,10 +1,6 @@
 <?
 $m = explode(" ", microtime()); $startTime = $m[0] + $m[1];
 
-$Y = date("Y"); $M = date("m"); $D = date("d");
-$today = date("Y-m-d"); $now = date("Y-m-d H:i:s");
-$timestamp = strtotime($now);
-
 include_once("config.php");
 include_once("mywikix/config.php");
 include_once("lib/misc.php");
@@ -12,6 +8,11 @@ include_once("lib/get_php_vars.php");
 include_once("lib/get_mypagenames.php");
 include_once("lib/dbm.php");
 include_once("lib/DisplayContent.php");
+
+$Y = date("Y"); $M = date("m"); $D = date("d");
+$today = date("Y-m-d"); $now = date("Y-m-d H:i:s");
+$timestamp = strtotime($now);
+
 include_once("mywikix/package.php");
 
 opendb($db, $dbHost, $dbName, $dbUser, $dbPass);
