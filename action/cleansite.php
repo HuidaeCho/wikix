@@ -14,16 +14,16 @@ if(!is_site_locked()){
 if($v0 == "" || !$v0)
 	$v0 = 1;
 
-$query = "select id, tag, version from ${db_}page order by id";
+$query = "select id, version, tversion from ${db_}page order by id";
 $result = pm_query($db, $query);
 $n = pm_num_rows($result);
 
 for($i=0; $i<$n; $i++){
 	$data = pm_fetch_array($result, $i);
-	$tag = $data['tag'];
 	$version = $data['version'] - $v0 + 1;
-	if($tag)
-		$version = ($tag>$version?$version:$tag);
+	$tversion = $data['tversion'];
+	if($tversion)
+		$version = ($tversion>$version?$version:$tversion);
 	$query = "delete from ${db_}data
 			where id=$data[id] and version<$version";
 	$result0 = pm_query($db, $query);

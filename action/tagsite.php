@@ -10,7 +10,7 @@ if(!is_site_locked()){
 	return;
 }
 
-$query = "update ${db_}page set tag=version";
+$query = "update ${db_}page set tversion=version, tname=name";
 $result = pm_query($db, $query);
 
 $query = "delete from ${db_}taggedlink";

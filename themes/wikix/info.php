@@ -35,8 +35,8 @@ echo
 ($page['locked']?"locked":"unlocked").", ".
 ($page['hidden']?"hidden":"unhidden").", ".
 $size.
-($page['tag']?"tagged: v$page[tag], ":"").
-"current: v$page[version]<br />\n".
+"current: v$page[version]".
+($page['tversion']?", tagged: v$page[tversion]:$page[tname]":"")."<br />\n".
 "from: <a href=\"index.php?links1=$pageName\">$linkfrom</a>, ".
 "to: <a href=\"index.php?links2=$pageName\">$linkto</a>
 ";

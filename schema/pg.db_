@@ -44,8 +44,9 @@ create table ${db_}page(
 	hits int,
 	locked char,
 	hidden char,
-	tag int,
-	version int
+	version int,
+	tversion int,
+	tname varchar(255)
 );
 
 create table ${db_}data(

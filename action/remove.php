@@ -6,9 +6,9 @@ if(invalid_access()){
 if(!$admin || !($id = pageid0($Pagename)))
 	return;
 
-$query = "select tag from ${db_}page where id=$id";
+$query = "select tversion from ${db_}page where id=$id";
 $result = pm_query($db, $query);
-$tag = pm_fetch_result($result, 0, 0);
+$tversion = pm_fetch_result($result, 0, 0);
 pm_free_result($result);
 
 $newversion = 0;
@@ -16,7 +16,7 @@ if($v0 == "" && $v1 == "")
 	$query = "delete from ${db_}data where id=$id";
 else
 if($v0 > 0){
-	$v0 = ($tag<$v0?$v0:$tag+1);
+	$v0 = ($tversion<$v0?$v0:$tversion+1);
 	$query = "select min(version) from ${db_}data where id=$id";
 	$result = pm_query($db, $query);
 	$minversion = pm_fetch_result($result, 0, 0);
@@ -37,7 +37,7 @@ if($v0 > 0){
 	$query = "delete from ${db_}data where id=$id and version>=$v0";
 }else
 if($v1 > 0){
-	$v1 = ($tag>$v1||!$tag?$v1:$tag-1);
+	$v1 = ($tversion>$v1||!$tversion?$v1:$tversion-1);
 	$query = "delete from ${db_}data where id=$id and version<=$v1";
 }else{
 	$v0 = "";

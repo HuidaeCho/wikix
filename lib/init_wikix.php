@@ -54,14 +54,14 @@ while(($pagename0 = readdir($dir))){
 
 	$id++;
 	$query = "insert into ${db_}page (id, name, cauthor, cip, ctime,
-				hits, hidden, locked, tag, version)
-				values($id, '$Pagename',
-				'HuidaeCho', '$ip', '$now', 0, 0, 0, 0, 1)";
+				hits, hidden, locked, version, tversion, tname)
+				values($id, '$Pagename', 'HuidaeCho', '$ip',
+				'$now', 0, 0, 0, 1, 0, '')";
 	$result = pm_query($db, $query);
 
-	$query = "insert into ${db_}data (id, version, author, ip, mtime, content)
-				values($id, 1,
-				'HuidaeCho', '$ip', '$now', '$content')";
+	$query = "insert into ${db_}data (id, version, author, ip, mtime,
+				content) values($id, 1, 'HuidaeCho', '$ip',
+				'$now', '$content')";
 	$result = pm_query($db, $query);
 	
 	if($result){

@@ -6,7 +6,7 @@ if(invalid_access()){
 if(!$admin || !($id = pageid0($Pagename)))
 	return;
 
-$query = "update ${db_}page set tag=0 where id=$id";
+$query = "update ${db_}page set tversion=0, tname='' where id=$id";
 $result = pm_query($db, $query);
 
 $query = "delete from ${db_}taggedlink where linkfrom=$id";

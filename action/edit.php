@@ -125,19 +125,32 @@ if($subaction == "Save"){
 
 	if(preg_match("/^\\\\RenameTo:([^\r\n]+)/", $content, $m)){
 		$content = preg_replace("/^.*\n?/", "", $content);
-		if($pagename0 != $m[1] && $version){
-			$p = $Pagename;
-			$pagename0 = $m[1];
-			$pagename = geni_specialchars($pagename0);
-			$Pagename = addslashes($pagename0);
-			$pageName = geni_urlencode($pagename0);
-			$pagenamE = escape_doit($pagename0);
-			$query = "update ${db_}page set name='$Pagename'
+		if($pagename0 != $m[1]){
+			$P = addslashes($m[1]);
+			$p = geni_specialchars($m[1]);
+			if(pageid($p))
+				warn("$p: Page already exists.");
+			else
+			if(pageid0($p))
+				warn("$p: Deleted page exists.");
+			else{
+				$p = $Pagename;
+				$pagename0 = $m[1];
+				$pagename = geni_specialchars($pagename0);
+				$Pagename = addslashes($pagename0);
+				$pageName = geni_urlencode($pagename0);
+				$pagenamE = escape_doit($pagename0);
+				if($version){
+					$query = "update ${db_}page
+							set name='$Pagename'
 							where id=$data[id]";
-			$result = pm_query($db, $query);
-			$query = "update ${db_}file set page='$Pagename'
+					$result = pm_query($db, $query);
+					$query = "update ${db_}file
+							set page='$Pagename'
 							where page='$p'";
-			$result = pm_query($db, $query);
+					$result = pm_query($db, $query);
+				}
+			}
 		}
 	}
 
@@ -266,9 +279,9 @@ if($subaction == "Save"){
 			$id = pm_fetch_result($result, 0, 0) + 1;
 		pm_free_result($result);
 		$query = "insert into ${db_}page (id, name, cauthor, cip, ctime,
-				hits, locked, hidden, tag, version)
+				hits, locked, hidden, version, tversion, tname)
 				values($id, '$Pagename', '$author', '$ip',
-				'$now', 0, $ilock, $ihide, 0, $version)";
+				'$now', 0, $ilock, $ihide, $version, 0, '')";
 		$result = pm_query($db, $query);
 	}
 

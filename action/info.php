@@ -12,8 +12,8 @@ if(!$admin && is_hidden($Pagename)){
 	return;
 }
 
-$query = "select cauthor, cip, ctime, hits, hidden, locked, tag, version
-			from ${db_}page where id=$id";
+$query = "select cauthor, cip, ctime, hits, hidden, locked, version,
+			tversion, tname from ${db_}page where id=$id";
 $result = pm_query($db, $query);
 $page = pm_fetch_array($result, 0);
 pm_free_result($result);

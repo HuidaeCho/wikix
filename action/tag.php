@@ -7,7 +7,7 @@ if(!$admin || !($id = pageid0($Pagename)))
 	return;
 
 if($v0 == "")
-	$tag = "version";
+	$tversion = "version";
 else{
 	$query = "select min(version), max(version)
 			from ${db_}data where id=$id";
@@ -16,15 +16,16 @@ else{
 	$maxversion = pm_fetch_result($result, 0, 1);
 	pm_free_result($result);
 	if($v0 < $minversion)
-		$tag = $minversion;
+		$tversion = $minversion;
 	else
 	if($v0 > $maxversion)
-		$tag = $maxversion;
+		$tversion = $maxversion;
 	else
-		$tag = $v0;
+		$tversion = $v0;
 }
 
-$query = "update ${db_}page set tag=$tag where id=$id";
+$query = "update ${db_}page set tversion=$tversion, tname='$Pagename'
+								where id=$id";
 $result = pm_query($db, $query);
 
 $query = "delete from ${db_}taggedlink where linkfrom=$id";
