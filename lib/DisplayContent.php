@@ -3692,8 +3692,7 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 	$tag3 = "";
 	$tag4 = "";
 
-	if($ninfos[0] === "0" &&
-			preg_match("/^(0+)/", $ninfos, $_m)){
+	if($ninfos[0] === "0" && preg_match("/^(0+)/", $ninfos, $_m)){
 		switch("x$_m[1]"){
 		case "x0":
 			$mode = 1;
@@ -3892,8 +3891,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 
 	$mode = 0;
 
-	if($ninfos[0] === "0" &&
-			preg_match("/^(0+)/", $ninfos, $_m)){
+	if($ninfos[0] === "0" && preg_match("/^(0+)/", $ninfos, $_m)){
 		switch("x$_m[1]"){
 		case "x0":
 			$mode = 1;
