@@ -179,7 +179,7 @@ do
 		esac
 		mv mywikix/_ext.tmp mywikix/ext.tmp
 	done
-	elif [ -f $d ]
+	elif [ $uninstall -eq 0 -a -f $d ]
 	then #######
 	case $d in
 	mywikix/package.php)
