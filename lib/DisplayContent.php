@@ -1909,14 +1909,17 @@ function plugin($str, $DisplayPool, &$displaypool){
 				$start = $_m[1];
 				$ninfos = $_m[2];
 			}
-			$query = search_query($search, $tc,
-						$ibegin, $iend, $order, $regex, $highlight);
+			$query = search_query($search, $tc, $ibegin, $iend,
+						$order, $regex, $highlight);
 			$porder = ($order==""?1:$porder);
-			$color = (strpos($order, " order by ${db_}data.mtime ")===false?0:1);
+			$color = (strpos($order,
+				" order by ${db_}data.mtime ")===false?0:1);
 			if($highlight == ""){
-				$r = pagelist($query, $start, $ninfos, $porder, $color);
+				$r = pagelist($query, $start, $ninfos, $porder,
+									$color);
 			}else{
-				$r = highlighted_pagelist($query, $start, $ninfos, $porder, $highlight);
+				$r = highlighted_pagelist($query, $start,
+						$ninfos, $porder, $highlight);
 				$r = str_replace("\\", "\x03", $r);
 			}
 			$str = preg_replace("\x01\\\\SearchPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
