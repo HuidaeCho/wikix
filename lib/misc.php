@@ -132,7 +132,7 @@ function escape_doit($str){
 
 function escape_html($str){
 	$str = str_replace("&lt;", "\x02&lt;", $str);
-	$str = str_replace("&gt;", "\x02&lt;", $str);
+	$str = str_replace("&gt;", "\x02&gt;", $str);
 	return $str;
 }
 
