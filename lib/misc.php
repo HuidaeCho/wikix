@@ -885,7 +885,15 @@ function smacro($content){
 		$content = implode("\n", $line);
 		$content = str_replace("\x05", "%", $content);
 	}
-	$content = preg_replace("/\\\\=[0-9a-zA-Z_]*/", "", $content);
+	$pattern = array(
+		"/\\\\=[0-9a-zA-Z_]*/",
+		"/^(\x02def=[0-9a-zA-Z_]*=)(.*\x07.*)$/me",
+	);
+	$replace = array(
+		"",
+		"'\\1{\n'.str_replace('\x07', '\n', '\\2').'\n}'",
+	);
+	$content = preg_replace($pattern, $replace, $content);
 	$content = str_replace("\x07", "\n", $content);
 	return $content;
 }
