@@ -74,12 +74,12 @@ do
 	d=`echo $i | sed 's/\\.zip$//'`
 	if [ $uninstall -eq 1 ]
 	then
-		echo Uninstalling $i...
+		echo Uninstalling $d...
 		grep -v "^$d$" ext.ils > ext.tmp
 		mv ext.tmp ext.ils
 	else
 		echo $d >> ext.ils
-		echo Installing $i...
+		echo Installing $d...
 		unzip -o $i -d $e
 	fi
 	if [ -d $d ]
@@ -179,7 +179,8 @@ do
 		esac
 		mv mywikix/_ext.tmp mywikix/ext.tmp
 	done
-	else #######
+	elif [ -f $d ]
+	then #######
 	case $d in
 	mywikix/package.php)
 		package=1
