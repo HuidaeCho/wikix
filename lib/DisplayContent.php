@@ -28,7 +28,8 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$_dotable, $_dopre, $_dolisting, $_domultilinelisting,
 		$_doheading, $_dolinebreak, $_dofont, $_dowhitespaces, $_donbsp,
 		$_domyplugin, $_doplugin, $_dosubs, $_domysubs, $_dodot, $_dop,
-		$_dobr, $_table, $_ntdattrs;
+		$_dobr, $_htmli, $_htmlp, $_table, $_ntdattrs,
+		$_listingi, $_listingp;
 
 #echo "r1: ".runTime()."<br />";
 	$content = str_replace("\r", "", $content);
@@ -345,8 +346,12 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dop = $_dop;
 		$dobr = $_dobr;
 
+		$htmli = $_htmli;
+		$htmlp = $_htmlp;
 		$table = $_table;
 		$ntdattrs = $_ntdattrs;
+		$listingi = $_listingi;
+		$listingp = $_listingp;
 	}else{
 		$dohtml = 1;
 		$dobracket = 1;
@@ -370,8 +375,12 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dop = 1;
 		$dobr = "";
 
+		$htmli = 0;
+		$htmlp = array();
 		$table = $tableAttr;
 		$ntdattrs = 1;
+		$listingi = 0;
+		$listingp = array();
 	}
 
 #echo "r6: ".runTime()."<br />";
@@ -402,7 +411,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 							$iline .= pre("", $isblock, $done);
 						else
 						if($close[$iclose] == 3)
-							$iline .= listing("", $done);
+							$iline .= listing("", $listingi, $listingp, $done);
 					}
 					$iclose++;
 					if(!$blankline){
@@ -487,7 +496,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 						break;
 				}
 				$iclose++;
-				$iline .= listing("", $done, 0);
+				$iline .= listing("", $listingi, $listingp, $done, 0);
 				if($domysubs)
 					$iline = mysubs($iline);
 				echo $iline;
@@ -505,7 +514,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 						$iline .= pre("", $isblock, $done);
 					else
 					if($close[$iclose] == 3)
-						$iline .= listing("", $done);
+						$iline .= listing("", $listingi, $listingp, $done);
 				}
 				$iclose++;
 				if($domysubs)
@@ -911,7 +920,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 						$endblock .= pre("", $isblock, $done);
 					else
 					if($close[$iclose] == 3)
-						$endblock .= listing("", $done);
+						$endblock .= listing("", $listingi, $listingp, $done);
 				}
 				$iclose++;
 				if($domysubs)
@@ -947,8 +956,12 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$_dodot = $dodot;
 				$_dop = $dop;
 				$_dobr = $dobr;
+				$_htmli = 0;
+				$_htmlp = array();
 				$_table = $table;
 				$_ntdattrs = $ntdattrs;
+				$_listingi = 0;
+				$_listingp = array();
 				$c = str_replace("\r\r", "\n", $m[2][$j]);
 				$c = str_replace("&lt;", "<", $c);
 				$c = str_replace("&gt;", ">", $c);
@@ -968,7 +981,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		}
 
 		if($dohtml)
-			$iline = html($iline);
+			$iline = html($iline, $htmli, $htmlp);
 		if($dobracket)
 			$iline = bracket($iline, $link, $dointerwiki);
 		if($donetlink)
@@ -1025,7 +1038,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$endblock .= $endblock0;
 			}
 			if($dolisting && !$done){
-				$endblock .= listing($iline, $done);
+				$endblock .= listing($iline, $listingi, $listingp, $done);
 				if($done)
 					$close[$iclose++] = 3;
 			}
@@ -1074,10 +1087,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$iline .= pre("", $isblock, $done);
 			else
 			if($close[$iclose] == 3)
-				$iline .= listing("", $done);
+				$iline .= listing("", $listingi, $listingp, $done);
 		}
 		if(!$depth)
-			$iline .= html("");
+			$iline .= html("", $htmli, $htmlp);
 #		if($mode == 1)
 #			$iline .= "</p>\n";
 #			$iline .= "<p class=\"p\">\n";
@@ -1332,7 +1345,7 @@ function font($str){
 	return $str;
 }
 
-function html($str){
+function html($str, &$ipair, &$pair){
 	global	$htmlDtag, $htmlStag, $netLink, $bs;
 	static	$ipair = 0, $pair = array();
 
@@ -1674,7 +1687,7 @@ function wikiword($str, &$link){
 	return $str;
 }
 
-function listing($str, &$done, $closeall = 1){
+function listing($str, &$ipair, &$pair, &$done, $closeall = 1){
 	static	$ipair = 0, $pair = array();
 
 	$done = 0;
