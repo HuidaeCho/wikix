@@ -42,13 +42,18 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 	$pattern = array(
 		"/^(.*\n)?\\\\begin\n/s",
 		"/\n\\\\end(\n.*)?$/s",
+		"/\\\\beginhide(?![a-zA-Z])[ \t]?(.*?)\\\\endhide(?![a-zA-Z])/s",
 		"/^\\\\basis\n(.*?)\n\\\\easis$/mse",
 		"/^\\\\bnobs\n(.*?)\n\\\\enobs$/mse",
 		"/^\\\\bnos\n(.*?)\n\\\\enos$/mse",
+		"/^\x03bhide\n(.*?)\n(\x03|\\\\)ehide$/ms",
+		"/^(\x03|\\\\)bhide\n(.*?)\n\x03ehide$/ms",
+		"/^\\\\bhide\n(.*?)\n\\\\ehide$/ms",
 	);
 	$replace = array(
 		"",
 		"",
+		($admin?"\\1":""),
 		"str_replace('/', '/\x06',
 			str_replace('$bs$bs', '\x03',
 			str_replace('$bs\"', '\"', '\\1')))",
@@ -56,6 +61,9 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			str_replace('$bs\"', '\"', '\\1'))",
 		"str_replace('/', '/\x06',
 			str_replace('$bs\"', '\"', '\\1'))",
+		($admin?"\\1":""),
+		($admin?"\\1":""),
+		"\\1",
 	);
 	$content = preg_replace($pattern, $replace, $content);
 
@@ -93,7 +101,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 
 	$content = str_replace("\\x5c", "\x5c", $content);
 #	$content = str_replace("\\\\", "\x03", $content);
-	$content = preg_replace("/^\\\\[be]hide$\n?/m", "", $content);
 
 	$content = mystage1($content, $mode);
 
@@ -115,7 +122,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"'(?<!\\\\)/\*.*?\*/'s",
 		"'^[ \t]*\x07[ \t]*\n|\x07'm",
 		"'\\\\begincomment(?![a-zA-Z]).*?\\\\endcomment(?![a-zA-Z])'s",
-		"'\\\\beginhide(?![a-zA-Z])[ \t]?(.*?)\\\\endhide(?![a-zA-Z])'s",
 		"'\\\\[pP]agename0(?![a-zA-Z])'",
 		"'\\\\[pP]ageName(?![a-zA-Z])'",
 		"'\\\\[pP]agenamE(?![a-zA-Z])'",
@@ -197,7 +203,6 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		"\x07",
 		"",
 		"",
-		($admin?"\\1":""),
 		$pagename0,
 		$pageName,
 		$pagenamE,

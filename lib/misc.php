@@ -995,14 +995,15 @@ function rreplace($content){
 
 function hidecode($content){
 	$content = str_replace("\\\\", "\x03", $content);
-	/*
-	if(preg_match("/\\\\beginhide(?![a-zA-Z]).*?\\\\endhide(?![a-zA-Z])/s",
-				$content))
-	*/
-	$content = preg_replace(
-		"/\\\\beginhide(?![a-zA-Z]).*?\\\\endhide(?![a-zA-Z])/s", "",
-		$content);
-	$content = preg_replace("/^\\\\bhide$.*?^\\\\ehide$/ms", "", $content);
+	$pattern = array(
+		"/\\\\beginhide(?![a-zA-Z]).*?\\\\endhide(?![a-zA-Z])/s",
+		"/^\\\\bhide\n.*?\n\\\\ehide$/ms",
+	);
+	$replace = array(
+		"",
+		"",
+	);
+	$content = preg_replace($pattern, $replace, $content);
 	$content = str_replace("\x03", "\\\\", $content);
 	return $content;
 }
