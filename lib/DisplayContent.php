@@ -4032,12 +4032,6 @@ function replace_toc($page){
 				$eli = "</li>\n";
 				break;
 			case 3:
-				$toc .= "<dl class=\"toc\">\n";
-				$BLI = "<dl>\n";
-				$ELI = "</dl>\n";
-				$bli = "<dt>";
-				$eli = "</dt>\n";
-				break;
 			case 4:
 				$toc .= "<dl class=\"toc\">\n";
 				$BLI = "<dl>\n";
@@ -4071,8 +4065,9 @@ function replace_toc($page){
 					$sec = "&nbsp;&nbsp;&nbsp;";
 					if($type == 4){
 						$Sec = "";
-						for($j=0; $j<=$depth; $j++)
+						for($j=0; $j<$depth; $j++)
 							$Sec .= ($tag[$j]+0).".";
+						$Sec .= ($tag[$j]+0);
 						$sec .= "$Sec$sec";
 						$page = preg_replace("\x01(<h".$m[0][$i]."(?: .*?)?>)(".preg_quote($m[2][$i])."<a name=\"wikiXheading".$m[1][$i]."\" class=\"totoc0\" href=\"#wikiXtoc${tocgrp}_\">&nbsp;</a><a class=\"totoc\" href=\"#wikiXtoc\">&nbsp;</a></h".$m[0][$i].">)\x01", "\\1\x07$Sec \\2", $page);
 					}
