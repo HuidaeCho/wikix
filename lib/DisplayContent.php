@@ -25,10 +25,10 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$tableAttr;
 	static	$once = 1, $depth = 0, $DisplayPool = array(),
 		$_dohtml, $_dobracket, $_donetlink, $_dointerwiki, $_dowikiword,
-		$_dotable, $_dopre, $_dolisting, $_doheading, $_dolinebreak,
-		$_dofont, $_dowhitespaces, $_donbsp, $_domyplugin, $_doplugin,
-		$_dosubs, $_domysubs, $_dodot, $_dop, $_dobr,
-		$_table, $_ntdattrs;
+		$_dotable, $_dopre, $_dolisting, $_domultilinelisting,
+		$_doheading, $_dolinebreak, $_dofont, $_dowhitespaces, $_donbsp,
+		$_domyplugin, $_doplugin, $_dosubs, $_domysubs, $_dodot, $_dop,
+		$_dobr, $_table, $_ntdattrs;
 
 #echo "r1: ".runTime()."<br />";
 	$content = str_replace("\r", "", $content);
@@ -327,6 +327,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dotable = $_dotable;
 		$dopre = $_dopre;
 		$dolisting = $_dolisting;
+		$domultilinelisting = $_domultilinelisting;
 		$doheading = $_doheading;
 		$dolinebreak = $_dolinebreak;
 		$dofont = $_dofont;
@@ -351,6 +352,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		$dotable = 1;
 		$dopre = 1;
 		$dolisting = 1;
+		$domultilinelisting = 0;
 		$doheading = 1;
 		$dolinebreak = 1;
 		$dofont = 1;
@@ -464,6 +466,25 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 		if($cont)
 			continue;
 		$blankline = 0;
+		if(!$domultilinelisting && strpos("*#;", $iline[0]) === false &&
+				$iclose > 0 && $close[$iclose-1] == 3){
+			if($mode){
+				$str = "";
+				for(; --$iclose>=0; ){
+					if($close[$iclose] == 1)
+						$str .= table("", $isblock, $table, $ntattrs, $done);
+					else
+					if($close[$iclose] == 2)
+						$str .= pre("", $isblock, $done);
+					else
+					if($close[$iclose] == 3)
+						$str .= listing("", $done);
+				}
+				$iclose++;
+				if($domysubs)
+					echo mysubs($str);
+			}
+		}
 		if($iline[0] == "\\"){
 		$cont = 0;
 		switch($iline){
@@ -517,6 +538,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$dotable = 0;
 			$dopre = 0;
 			$dolisting = 0;
+			$domultilinelisting = 1;
 			$doheading = 0;
 			$dolinebreak = 0;
 			$dofont = 0;
@@ -540,6 +562,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$dotable = 1;
 			$dopre = 1;
 			$dolisting = 1;
+			$domultilinelisting = 0;
 			$doheading = 1;
 			$dolinebreak = 1;
 			$dofont = 1;
@@ -563,6 +586,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$dotable = 0;
 			$dopre = 0;
 			$dolisting = 0;
+			$domultilinelisting = 0;
 			$doheading = 0;
 			$dolinebreak = 0;
 			$dofont = 0;
@@ -586,6 +610,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			$dotable = 1;
 			$dopre = 1;
 			$dolisting = 1;
+			$domultilinelisting = 1;
 			$doheading = 1;
 			$dolinebreak = 1;
 			$dofont = 1;
@@ -662,6 +687,14 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 			break;
 		case "\\dolisting":
 			$dolisting = 1;
+			$cont = 1;
+			break;
+		case "\\nomultilinelisting":
+			$domultilinelisting = 0;
+			$cont = 1;
+			break;
+		case "\\domultilinelisting":
+			$domultilinelisting = 1;
 			$cont = 1;
 			break;
 		case "\\noheading":
@@ -770,6 +803,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				'dotable' => $dotable,
 				'dopre' => $dopre,
 				'dolisting' => $dolisting,
+				'domultilinelisting' => $domultilinelisting,
 				'doheading' => $doheading,
 				'dolinebreak' => $dolinebreak,
 				'dofont' => $dofont,
@@ -796,6 +830,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$dotable = $dircmd[$idircmd]['dotable'];
 				$dopre = $dircmd[$idircmd]['dopre'];
 				$dolisting = $dircmd[$idircmd]['dolisting'];
+				$domultilinelisting = $dircmd[$idircmd]['domultilinelisting'];
 				$doheading = $dircmd[$idircmd]['doheading'];
 				$dolinebreak = $dircmd[$idircmd]['dolinebreak'];
 				$dofont = $dircmd[$idircmd]['dofont'];
@@ -827,6 +862,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 					'dotable' => $dotable,
 					'dopre' => $dopre,
 					'dolisting' => $dolisting,
+					'domultilinelisting' => $domultilinelisting,
 					'doheading' => $doheading,
 					'dolinebreak' => $dolinebreak,
 					'dofont' => $dofont,
@@ -852,6 +888,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 					$dotable = $dircmd[$m[1]]['dotable'];
 					$dopre = $dircmd[$m[1]]['dopre'];
 					$dolisting = $dircmd[$m[1]]['dolisting'];
+					$domultilinelisting = $dircmd[$m[1]]['domultilinelisting'];
 					$doheading = $dircmd[$m[1]]['doheading'];
 					$dolinebreak = $dircmd[$m[1]]['dolinebreak'];
 					$dofont = $dircmd[$m[1]]['dofont'];
@@ -892,6 +929,7 @@ function DisplayContent($content, $mode = 1, $group = 0, $reset = 0){
 				$_dotable = $dotable;
 				$_dopre = $dopre;
 				$_dolisting = $dolisting;
+				$_domultilinelisting = $domultilinelisting;
 				$_doheading = $doheading;
 				$_dolinebreak = $dolinebreak;
 				$_dofont = $dofont;
