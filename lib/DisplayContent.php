@@ -3026,7 +3026,8 @@ function plugin($str, $DisplayPool, &$displaypool){
 				where ${db_}page.id=${db_}data.id
 				and ${db_}page.version=${db_}data.version ".
 				($admin?"":"and ${db_}page.hidden=0 ").
-				"and ${db_}data.content='\x01' \x02";
+				"and ${db_}data.content='\x01'
+				\x02order by page.name";
 		if($n > 1){
 			$m[1] = array_values(array_unique($m[1]));
 			$n = count($m[1]);
