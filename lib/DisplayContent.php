@@ -1914,14 +1914,12 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$porder = ($order==""?1:$porder);
 			$color = (strpos($order,
 				" order by ${db_}data.mtime ")===false?0:1);
-			if($highlight == "" || $tc == 0x1){
+			if($highlight == "" || $tc == 0x1)
 				$r = pagelist($query, $start, $ninfos, $porder,
 									$color);
-			}else{
+			else
 				$r = highlighted_pagelist($query, $start,
 						$ninfos, $porder, $highlight);
-				$r = str_replace("\\", "\x03", $r);
-			}
 			$str = preg_replace("\x01\\\\SearchPages".preg_quote($m[1][$i])."(?![0-9a-zA-Z])\x01", $r, $str);
 		}
 		if(strpos($str, "\\") === false)
@@ -3973,6 +3971,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 	}
 	pm_free_result($result);
 	$str .= ($mode==2?"</ul>":"</ol>");
+	$str = str_replace("\\", "\x03", $str);
 
 	return $str;
 }
