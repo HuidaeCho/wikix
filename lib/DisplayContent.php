@@ -2955,10 +2955,8 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			if($nr > 0 && $list < 2){
 				if($list){
-					if($mode == 2)
-						$r .= "<ul class=\"pagelist\">\n";
-					else
-						$r .= "<ol class=\"pagelist\">\n";
+					$r .=
+"<".($mode==2?"u":"o")."l class=\"pagelist\">\n";
 				}else{
 					$r .=
 "<table class=\"pagelist\">\n".($mode?$tag1:
@@ -3115,10 +3113,8 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			if($nr > 0 && $list < 2){
 				if($list){
-					if($mode == 2)
-						$r .= "<ul class=\"pagelist\">\n";
-					else
-						$r .= "<ol class=\"pagelist\">\n";
+					$r .=
+"<".($mode==2?"u":"o")."l class=\"pagelist\">\n";
 				}else{
 					$r .=
 "<table class=\"pagelist\">\n".($mode?$tag1:
@@ -3294,10 +3290,8 @@ function plugin($str, $DisplayPool, &$displaypool){
 			$r = "";
 			if($nr > 0 && $list < 2){
 				if($list){
-					if($mode == 2)
-						$r .= "<ul class=\"pagelist\">\n";
-					else
-						$r .= "<ol class=\"pagelist\">\n";
+					$r .=
+"<".($mode==2?"u":"o")."l class=\"pagelist\">\n";
 				}else{
 					$r .=
 "<table class=\"pagelist\">\n".($mode?$tag1:
@@ -3734,10 +3728,8 @@ function pagelist($query, $start, $ninfos, $order, $color = 0){
 	$str = "";
 	if($list < 2){
 		if($list){
-			if($mode == 2)
-				$str .= "<ul class=\"pagelist\">\n";
-			else
-				$str .= "<ol class=\"pagelist\">\n";
+			$str .=
+"<".($mode==2?"u":"o")."l class=\"pagelist\">\n";
 		}else{
 			$str .=
 "<table class=\"pagelist\">\n".($mode?$tag1:
@@ -3900,10 +3892,7 @@ function highlighted_pagelist($query, $start, $ninfos, $order, $pattern){
 		}
 	}
 
-	if($mode == 2)
-		$str = "<ul class=\"pagelist\">\n";
-	else
-		$str = "<ol class=\"pagelist\">\n";
+	$str = "<".($mode==2?"u":"o")."l class=\"pagelist\">\n";
 	$date = "";
 	$class = "recent";
 	for($i=$start; $i<$end; $i++){
