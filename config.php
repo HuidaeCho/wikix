@@ -50,13 +50,17 @@ $htmlStag =
 $wikiXheaderFile = "mywikix/wikix.header";
 $wikiXfooterFile = "mywikix/wikix.footer";
 
-$fp = fopen($wikiXheaderFile, "r");
-$wikiXheader = substr(fread($fp, filesize($wikiXheaderFile)), 0, -1);
-fclose($fp);
+if(filesize($wikiXheaderFile)){
+	$fp = fopen($wikiXheaderFile, "r");
+	$wikiXheader = substr(fread($fp, filesize($wikiXheaderFile)), 0, -1);
+	fclose($fp);
+}
 
-$fp = fopen($wikiXfooterFile, "r");
-$wikiXfooter = fread($fp, filesize($wikiXfooterFile));
-fclose($fp);
+if(filesize($wikiXfooterFile)){
+	$fp = fopen($wikiXfooterFile, "r");
+	$wikiXfooter = fread($fp, filesize($wikiXfooterFile));
+	fclose($fp);
+}
 ################################################################################
 
 $db = 0;
